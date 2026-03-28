@@ -85,6 +85,16 @@ Generates guitar patterns across multiple ranges:
 - **C2-A#2**: Styles 1-11
 - **B2**: Stop pattern
 
+### 8. Groovemate Generator (`groovemate_notes.py`)
+Style pattern layout:
+- **C3 D3 E3 F3 G3** → Verses
+- **C#3 D#3** → Intros
+- **F#3 G#3 A#3** → Fills
+- **A3 B3 C4 D4 E4** → Choruses
+- **C#4 D#4** → Endings
+- **F4 G4 A4** → Specials
+- **F#4 G#4 A#4** → Breakdowns
+- **B4** → Stop
 ---
 
 ## Native Instruments Generators
@@ -169,6 +179,7 @@ python ./generators_ujam/subcraft_notes.py
 python ./generators_ujam/usynth_notes.py
 python ./generators_ujam/vbassist_notes.py
 python ./generators_ujam/vguitarist_notes.py
+python ./generators_ujam/groovemate_notes.py
 
 python ./generators_audiomodern/playbeat_notes.py
 ```
