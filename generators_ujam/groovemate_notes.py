@@ -12,42 +12,42 @@ notes_data = [
     # One shots
 
     # Quinto
-    {"file_note": "C1", "track_name": "Quinto 1 C1"},
-    {"file_note": "C#1", "track_name": "Quinto 2 C#1"},
-    {"file_note": "D1", "track_name": "Quinto 3 D1"},
-    {"file_note": "D#1", "track_name": "Quinto 4 D#1"},
-    {"file_note": "E1", "track_name": "Quinto 5 E1"},
+    {"file_note": "C1", "track_name": "Quinto Open C1"},
+    {"file_note": "C#1", "track_name": "Quinto Heel C#1"},
+    {"file_note": "D1", "track_name": "Quinto Muted D1"},
+    {"file_note": "D#1", "track_name": "Quinto Finger D#1"},
+    {"file_note": "E1", "track_name": "Quinto Slap E1"},
 
     # Conga
-    {"file_note": "F1", "track_name": "Conga 1 F1"},
-    {"file_note": "G1", "track_name": "Conga 2 G1"},
-    {"file_note": "A1", "track_name": "Conga 3 A1"},
+    {"file_note": "F1", "track_name": "Conga Open F1"},
+    {"file_note": "G1", "track_name": "Conga Bass G1"},
+    {"file_note": "A1", "track_name": "Conga Bass Muted A1"},
 
     # Maracas
-    {"file_note": "F#1", "track_name": "Maracas 1 F#1"},
-    {"file_note": "G#1", "track_name": "Maracas 2 G#1"},
+    {"file_note": "F#1", "track_name": "Maracas Forth F#1"},
+    {"file_note": "G#1", "track_name": "Maracas Back G#1"},
 
     # Clave
     {"file_note": "A#1", "track_name": "Clave A#1"},
 
     # Tumba
-    {"file_note": "B1", "track_name": "Tumba 1 B1"},
-    {"file_note": "C2", "track_name": "Tumba 2 C2"},
-    {"file_note": "D2", "track_name": "Tumba 3 D2"},
+    {"file_note": "B1", "track_name": "Tumba Open B1"},
+    {"file_note": "C2", "track_name": "Tumba Bass C2"},
+    {"file_note": "D2", "track_name": "Tumba Bass Muted D2"},
 
     # Cabasa
-    {"file_note": "C#2", "track_name": "Cabasa 1 C#2"},
-    {"file_note": "D#2", "track_name": "Cabasa 2 D#2"},
+    {"file_note": "C#2", "track_name": "Cabasa Left C#2"},
+    {"file_note": "D#2", "track_name": "Cabasa Right D#2"},
 
     # Cowbell
-    {"file_note": "E2", "track_name": "Cowbell 1 E2"},
-    {"file_note": "F2", "track_name": "Cowbell 2 F2"},
-    {"file_note": "G2", "track_name": "Cowbell 3 G2"},
+    {"file_note": "E2", "track_name": "Cowbell Edge E2"},
+    {"file_note": "F2", "track_name": "Cowbell Tip F2"},
+    {"file_note": "G2", "track_name": "Cowbell Damped G2"},
 
     # Tambourine
-    {"file_note": "F#2", "track_name": "Tambourine 1 F#2"},
-    {"file_note": "G#2", "track_name": "Tambourine 2 G#2"},
-    {"file_note": "A#2", "track_name": "Tambourine 3 A#2"},
+    {"file_note": "F#2", "track_name": "Tambourine Forth-Back F#2"},
+    {"file_note": "G#2", "track_name": "Tambourine Accent G#2"},
+    {"file_note": "A#2", "track_name": "Tambourine Shake A#2"},
 
     # Claps
     {"file_note": "A2", "track_name": "Claps A2"},
