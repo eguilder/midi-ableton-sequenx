@@ -131,7 +131,7 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 
 ### 6. Playbox
 
-### 6. TRK-01
+### 7. TRK-01
 
 ---
 ## Audiomodern Generators
@@ -139,6 +139,31 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 ### 1. Playbeat
 **Remix Groove selection (chromatic)**:
 - **C-3–B-4** → Groove 1–12
+
+## reMIDI Generators
+
+Generates fully structured song arrangements for use with reMIDI 3, which is a phrase-based MIDI engine.
+Unlike static note generators, this system creates complete compositions with section-based logic, timing alignment, and controlled randomness.
+
+### 1. Drums
+**Drum Sections**
+- **0_A → Intro
+- **0_B → Verse
+- **1_A → Pre-Chorus
+- **1_B → Chorus
+- **2_A → Bridge
+- **2_B → Fill source
+- **3_A → Short fills (2 bars)
+- **3_B → Long fills (4 bars)
+
+### 2. Bass
+**Drum Sections**
+- **0_A → Intro
+- **0_B → Verse
+- **1_A → Pre-Chorus
+- **1_B → Chorus
+
+
 
 ## Installation
 
@@ -159,29 +184,31 @@ The note data is already present in this repo, in the folders notes_* and midi_f
 To re-generate the data, run any generator script directly:
 
 ```bash
-python ./generators_ableton/create_chords.py
-python ./generators_ableton/create_notes.py
-python ./generators_ableton/instrument_notes.py
+python3 ./generators_ableton/create_chords.py
+python3 ./generators_ableton/create_notes.py
+python3 ./generators_ableton/instrument_notes.py
 
-python ./generators_native/drumlab_notes.py
-python ./generators_native/playbox_notes.py
-python ./generators_native/playseries_notes.py
-python ./generators_native/s-horns_notes.py
-python ./generators_native/s-percussionist_notes.py
-python ./generators_native/session_notes.py
-python ./generators_native/spotlight_notes.py
-python ./generators_native/trk-01_notes.py
+python3 ./generators_native/drumlab_notes.py
+python3 ./generators_native/playbox_notes.py
+python3 ./generators_native/playseries_notes.py
+python3 ./generators_native/s-horns_notes.py
+python3 ./generators_native/s-percussionist_notes.py
+python3 ./generators_native/session_notes.py
+python3 ./generators_native/spotlight_notes.py
+python3 ./generators_native/trk-01_notes.py
 
-python ./generators_ujam/beatmaker_notes.py
-python ./generators_ujam/drummer_notes.py
-python ./generators_ujam/pianist_notes.py
-python ./generators_ujam/subcraft_notes.py
-python ./generators_ujam/usynth_notes.py
-python ./generators_ujam/vbassist_notes.py
-python ./generators_ujam/vguitarist_notes.py
-python ./generators_ujam/groovemate_notes.py
+python3 ./generators_ujam/beatmaker_notes.py
+python3 ./generators_ujam/drummer_notes.py
+python3 ./generators_ujam/pianist_notes.py
+python3 ./generators_ujam/subcraft_notes.py
+python3 ./generators_ujam/usynth_notes.py
+python3 ./generators_ujam/vbassist_notes.py
+python3 ./generators_ujam/vguitarist_notes.py
+python3 ./generators_ujam/groovemate_notes.py
 
-python ./generators_audiomodern/playbeat_notes.py
+python3 ./generators_audiomodern/playbeat_notes.py
+
+python3 generators_remidi/remidi_sequences.py
 ```
 
 Each script creates a separate folder of **Ableton-ready MIDI clips**, numbered and named for immediate use in the corresponding plugin track.
