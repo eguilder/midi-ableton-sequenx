@@ -1,6 +1,6 @@
 # MIDI Generators for Ableton Live
 
-A collection of Python scripts for generating MIDI files designed to control sequencer- and phrase-based instruments for usage with **Ableton Live**, **UJAM**, **Native Instruments** and **Audiomodern** products. All generators create Ableton-ready MIDI clips with correct octave handling, embedded track names, and predictable note layouts. Other DAWs can use these sequencer notes as well.
+A collection of Python scripts for generating MIDI files designed to control sequencer- and phrase-based instruments for usage with **Ableton Live**, **UJAM**, **Native Instruments**, **WA Production** and **Audiomodern** products. All generators create Ableton-ready MIDI clips with correct octave handling, embedded track names, and predictable note layouts. Other DAWs can use these sequencer notes as well.
 
 The MIDI clips in this repo can either be generated via scripts or used directly inside Ableton Live.
 
@@ -23,6 +23,7 @@ Generators are organized into **three logical categories**, based on the target 
 1. **Ableton-native generators**
 2. **UJAM generators**
 3. **Native Instruments generators**
+4. **WA Production generators**
 
 ---
 
@@ -134,6 +135,17 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 ### 7. TRK-01
 
 ---
+
+## WA Production Generators
+
+### 1. Instachord 2
+**Instrument x Phrase grid**:
+- **C1-B1** -> Chords A 1-12
+- **C2-B2** -> Chords B 1-12
+- **C3-B3** -> Picks A 1-12
+- **C4-B4** -> Picks B 1-12
+
+---
 ## Audiomodern Generators
 
 ### 1. Playbeat
@@ -196,6 +208,8 @@ python3 ./generators_native/s-percussionist_notes.py
 python3 ./generators_native/session_notes.py
 python3 ./generators_native/spotlight_notes.py
 python3 ./generators_native/trk-01_notes.py
+
+python3 ./generators_waprod/instachord_notes.py
 
 python3 ./generators_ujam/beatmaker_notes.py
 python3 ./generators_ujam/drummer_notes.py
