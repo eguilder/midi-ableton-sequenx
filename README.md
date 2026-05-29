@@ -9,7 +9,7 @@ The MIDI clips in this repo can either be generated via scripts or used directly
 ## Features
 
 - **Ableton-correct MIDI note mapping** (handles Ableton’s octave offset)
-- **Embedded track-name metadata** (no more “Track 0” clips)
+- **Embedded track-name metadata** 
 - **Multiple generator layouts** for different instrument ecosystems
 - **Sequentially numbered filenames** (sorted by pitch)
 - **Clip names that match filenames** for easy browsing
@@ -24,7 +24,8 @@ Generators are organized into **three logical categories**, based on the target 
 2. **UJAM generators**
 3. **Native Instruments generators**
 4. **WA Production generators**
-
+5. **Audiomodern Generators**
+6. **reMIDI Generators**
 ---
 
 ## Ableton Generators
@@ -175,6 +176,12 @@ Unlike static note generators, this system creates complete compositions with se
 - **1_A → Pre-Chorus
 - **1_B → Chorus
 
+### 3. Pads
+**Progressions Sections**
+- **3_A → Intro
+- **3_B → Verse
+- **4_A → Pre-Chorus
+- **4_B → Chorus
 
 
 ## Installation
