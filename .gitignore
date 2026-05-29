@@ -3,6 +3,17 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Cache directories
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.ipynb_checkpoints/
+htmlcov/
+*[Cc][Aa][Cc][Hh][Ee]*/
+
 # Generated MIDI files
 notes_beatmaker/
 notes_subcraft/
