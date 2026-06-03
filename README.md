@@ -146,6 +146,9 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 - **C3-B3** -> Picks A 1-12
 - **C4-B4** -> Picks B 1-12
 
+### 2. Instacomposer 3
+**instacomposer_sequences.py**:
+
 ---
 ## Audiomodern Generators
 

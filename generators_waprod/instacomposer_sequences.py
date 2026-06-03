@@ -4,108 +4,77 @@ import sys
 
 
 # ===============================
-# MASTER TEMPLATE (EMBEDDED)
+# EXTRACT COMPLETE SECTION
 # ===============================
-MASTER_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
-
-<Instacomposer3Preset Version="3.0.2"
-    PresetName="{preset_name}"
-    PresetFolder="7"
-    PresetID="310"
-    PresetInfo="Preset info."
-    ActiveSection="0"
-    ActivveTrack="0"
-    EditView="0"
-    ProcessMidi="1"
-    PlayMode="1"
-    Tempo="100.0"
-    SyncTempo="0"
-    ChordDetBarBeat="0.2000000029802322"
-    ChordDetComplexity="0.0"
-    ChordDetVoiceOrder="1.0"
-    LockTrackSettingSong="0"
-    LockTrackSettingActiveSong="0"
-    LockMIDIChSong="0"
-    LockTrackModeSong="0"
-    LockTrackOctaveRangeSong="0"
-{section_flags}>
-
-{sections}
-
-</Instacomposer3Preset>
-"""
-
-
-# ===============================
-# SNAP EXTRACTION
-# ===============================
-def extract_snap_content(file_path):
+def extract_section(file_path):
 
     with open(file_path, "r", encoding="utf-8") as f:
         data = f.read()
 
-    snaps = re.findall(
-        r"<Snap\d+.*?</Snap\d+>",
+    match = re.search(
+        r"<Sec_\d+.*?</Sec_\d+>",
         data,
         flags=re.DOTALL
     )
 
-    fixed_snaps = []
-
-    for snap in snaps:
-
-        # Convert:
-        # <Snap0> -> <Snap_0>
-        # </Snap0> -> </Snap_0>
-
-        snap = re.sub(
-            r"<Snap(\d+)",
-            r"<Snap_\1",
-            snap
+    if not match:
+        raise RuntimeError(
+            f"No section block found in {file_path}"
         )
 
-        snap = re.sub(
-            r"</Snap(\d+)",
-            r"</Snap_\1",
-            snap
-        )
-
-        fixed_snaps.append(snap)
-
-    return "\n".join(fixed_snaps)
+    return match.group(0)
 
 
 # ===============================
-# SECTION BLOCK
+# RENUMBER SECTION
 # ===============================
-def build_section_block(index, snap_content):
+def renumber_section(section_xml, index):
 
-    return f"""  <Sec_{index} SecLabel="Sec {index+1}" ActiveSnapShot="0"
-         SectionMode="-1" SectionLabel="Sec {index+1}"
-         SnapActive_0="1" SnapActive_1="0" SnapActive_2="0"
-         SnapActive_3="0" SnapActive_4="0" SnapActive_5="0"
-         SnapActive_6="0" SnapActive_7="0">
-{snap_content}
-  </Sec_{index}>
-"""
+    label = f"Sec {index + 1}"
+
+    section_xml = re.sub(
+        r"<Sec_\d+",
+        f"<Sec_{index}",
+        section_xml,
+        count=1
+    )
+
+    section_xml = re.sub(
+        r"</Sec_\d+>",
+        f"</Sec_{index}>",
+        section_xml,
+        count=1
+    )
+
+    section_xml = re.sub(
+        r'SecLabel="[^"]*"',
+        f'SecLabel="{label}"',
+        section_xml
+    )
+
+    section_xml = re.sub(
+        r'SectionLabel="[^"]*"',
+        f'SectionLabel="{label}"',
+        section_xml
+    )
+
+    return section_xml
 
 
 # ===============================
-# SECTION FLAGS
+# BUILD SECTION FLAGS
 # ===============================
 def build_section_flags(section_count):
 
-    flags = ""
+    flags = []
 
     for i in range(18):
-
         value = "1" if i < section_count else "0"
-
-        flags += (
-            f'    SectionActive_{i}="{value}"\n'
+        flags.append(
+            f'SectionActive_{i}="{value}"'
         )
 
-    return flags.rstrip()
+    return flags
 
 
 # ===============================
@@ -145,7 +114,6 @@ def find_files_for_key(prefix, key):
         match = pattern.match(filename)
 
         if match:
-
             files.append(
                 (
                     int(match.group(1)),
@@ -159,6 +127,78 @@ def find_files_for_key(prefix, key):
 
 
 # ===============================
+# LOAD TEMPLATE FROM FILE
+# ===============================
+def build_template_from_source(
+    source_file,
+    preset_name,
+    section_count,
+    sections_xml
+):
+
+    with open(source_file, "r", encoding="utf-8") as f:
+        xml = f.read()
+
+    # Extract XML declaration
+    xml_decl_match = re.search(
+        r"<\?xml.*?\?>",
+        xml,
+        flags=re.DOTALL
+    )
+
+    if not xml_decl_match:
+        raise RuntimeError(
+            "Could not find XML declaration"
+        )
+
+    xml_decl = xml_decl_match.group(0)
+
+    # Extract opening Instacomposer tag
+    preset_match = re.search(
+        r"<Instacomposer3Preset\b.*?>",
+        xml,
+        flags=re.DOTALL
+    )
+
+    if not preset_match:
+        raise RuntimeError(
+            "Could not find Instacomposer3Preset tag"
+        )
+
+    preset_tag = preset_match.group(0)
+
+    # Update PresetName
+    preset_tag = re.sub(
+        r'PresetName="[^"]*"',
+        f'PresetName="{preset_name}"',
+        preset_tag
+    )
+
+    # Update SectionActive flags
+    flags = build_section_flags(section_count)
+
+    for i, value in enumerate(flags):
+
+        preset_tag = re.sub(
+            rf'SectionActive_{i}="[^"]*"',
+            value,
+            preset_tag
+        )
+
+    # Assemble final file
+    final_xml = (
+        xml_decl
+        + "\n\n"
+        + preset_tag
+        + "\n"
+        + sections_xml
+        + "\n</Instacomposer3Preset>\n"
+    )
+
+    return final_xml
+
+
+# ===============================
 # BUILD PRESET
 # ===============================
 def build_preset(prefix, key):
@@ -169,41 +209,45 @@ def build_preset(prefix, key):
     )
 
     if not section_files:
-
         print(
             f"No files found for key {key}"
         )
-
         return
 
     print(
-        f"Building {prefix}_{key} "
-        f"with {len(section_files)} sections"
+        f"Building {prefix}_{key}"
+        f" ({len(section_files)} sections)"
     )
 
-    sections = ""
+    sections = []
 
     for index, filename in enumerate(
         section_files
     ):
 
-        snap_content = extract_snap_content(
+        section_xml = extract_section(
             filename
         )
 
-        sections += build_section_block(
-            index,
-            snap_content
+        section_xml = renumber_section(
+            section_xml,
+            index
         )
 
-    section_flags = build_section_flags(
-        len(section_files)
+        sections.append(section_xml)
+
+    sections_xml = "\n\n".join(
+        sections
     )
 
-    final_xml = MASTER_TEMPLATE.format(
+    # First file becomes template source
+    template_file = section_files[0]
+
+    final_xml = build_template_from_source(
+        source_file=template_file,
         preset_name=f"{prefix}_{key}",
-        section_flags=section_flags,
-        sections=sections
+        section_count=len(section_files),
+        sections_xml=sections_xml
     )
 
     output_name = (
@@ -215,7 +259,6 @@ def build_preset(prefix, key):
         "w",
         encoding="utf-8"
     ) as f:
-
         f.write(final_xml)
 
     print(
@@ -239,13 +282,13 @@ def print_help():
 
     print("Examples:")
     print(
-        "  python build_preset.py AH01FI2 Fm"
+        "  python build_preset.py PT01FIC3 Fm"
     )
     print(
-        "  python build_preset.py AH01FI2 F#m"
+        "  python build_preset.py PT01FIC3 F#m"
     )
     print(
-        "  python build_preset.py AH01FI2 ALL"
+        "  python build_preset.py PT01FIC3 ALL"
     )
     print()
 
@@ -267,7 +310,6 @@ def print_help():
 if __name__ == "__main__":
 
     if len(sys.argv) != 3:
-
         print_help()
         sys.exit(1)
 
@@ -280,12 +322,10 @@ if __name__ == "__main__":
         keys = detect_keys(prefix)
 
         if not keys:
-
             print(
                 f"No keys found for prefix "
                 f"'{prefix}'"
             )
-
             sys.exit(1)
 
         print(
