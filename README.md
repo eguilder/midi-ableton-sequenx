@@ -18,14 +18,15 @@ The MIDI clips in this repo can either be generated via scripts or used directly
 
 ## Generator Categories
 
-Generators are organized into **three logical categories**, based on the target ecosystem:
+Generators are organized by target ecosystem and workflow:
 
-1. **Ableton-native generators**
-2. **UJAM generators**
-3. **Native Instruments generators**
-4. **WA Production generators**
-5. **Audiomodern Generators**
-6. **reMIDI Generators**
+1. **Ableton-native generators**: General-purpose note, instrument-note, and chord/progression MIDI clips.
+2. **UJAM generators**: Beatmaker, drummer, bassist, guitarist, pianist, synth, Groovemate, SE-DRUMS, and SE-ORCHESTRA trigger-note layouts.
+3. **Native Instruments generators**: Kontakt and NI-style phrase, chord, groove, and sound/pattern trigger layouts.
+4. **WA Production generators**: Instachord MIDI trigger grids and Instacomposer 3 preset assembly from exported section files.
+5. **Audiomodern generators**: Playbeat remix groove trigger clips.
+6. **reMIDI generators**: Structured drum, bass, and pad sequence generators for arrangement-style MIDI output.
+
 ---
 
 ## Ableton Generators
@@ -97,6 +98,27 @@ Style pattern layout:
 - **F4 G4 A4** → Specials
 - **F#4 G#4 A#4** → Breakdowns
 - **B4** → Stop
+
+### 9. SE-ORCHESTRA Generator (`se-orch_notes.py`)
+Orchestral pattern layout:
+- **C1-A1** -> Phrases
+- **C#1, D#1, F#1, G#1** -> Additions
+- **A#1** -> End
+- **B1** -> Stop
+- **C2-B2** -> Bass
+- **C3-B4** -> Play
+
+### 10. SE-DRUMS Generator (`se-drums_notes.py`)
+Drum pattern layout:
+- **C2-B2** -> Common Phrases
+- **C#2, D#2** -> Hits
+- **F#2, G#2, A#2** -> Metals
+- **C3-D#4** -> Style Phrases, with Intros, Fills, and Endings
+- **C#3, D#3** -> Intros
+- **F#3, G#3, A#3** -> Fills
+- **C#4, D#4** -> Endings
+- **E4** -> Stop
+
 ---
 
 ## Native Instruments Generators
@@ -132,8 +154,15 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 - **C3–D#4** → Pattern 1–16
 
 ### 6. Playbox
+**Chord triggering on white keys**:
+- **C3, D3, E3, F3, G3, A3, B3, C4** -> Chord 1-8
 
 ### 7. TRK-01
+**Kick and bass sound/pattern selection**:
+- **C1-G1** -> Kick Sound 1-8
+- **C2-G2** -> Kick Pattern 1-8
+- **C3-G3** -> Bass Sound 1-8
+- **C4-G4** -> Bass Pattern 1-8
 
 ---
 
@@ -148,6 +177,13 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 
 ### 2. Instacomposer 3
 **instacomposer_sequences.py**:
+- Builds complete Instacomposer 3 preset text files from exported 4-bar section files
+- Input files are matched as `PREFIX_###_KEY_4Bar.txt`
+- Renumbers sections sequentially and updates section labels to `Sec 1`, `Sec 2`, etc.
+- Updates active section flags for the number of included sections
+- Outputs `PREFIX_KEY_FullPreset.txt`
+- Run for one key: `python3 ./generators_waprod/instacomposer_sequences.py PREFIX Fm`
+- Run for all detected keys: `python3 ./generators_waprod/instacomposer_sequences.py PREFIX ALL`
 
 ---
 ## Audiomodern Generators
@@ -203,13 +239,36 @@ pip install -r requirements.txt
 ## Usage
 
 The note data is already present in this repo, in the folders notes_* and midi_files_ableton_*.
-To re-generate the data, run any generator script directly:
+To re-generate the data, run any generator script directly.
+
+Ableton-native generators:
 
 ```bash
-python3 ./generators_ableton/create_chords.py
 python3 ./generators_ableton/create_notes.py
 python3 ./generators_ableton/instrument_notes.py
+python3 ./generators_ableton/create_chords.py
+```
 
+UJAM generators:
+
+```bash
+python3 ./generators_ujam/beatmaker_notes.py
+python3 ./generators_ujam/beatmaker_sequences.py
+python3 ./generators_ujam/drummer_notes.py
+python3 ./generators_ujam/groovemate_notes.py
+python3 ./generators_ujam/groovemate_sequences.py
+python3 ./generators_ujam/pianist_notes.py
+python3 ./generators_ujam/se-drums_notes.py
+python3 ./generators_ujam/se-orch_notes.py
+python3 ./generators_ujam/subcraft_notes.py
+python3 ./generators_ujam/usynth_notes.py
+python3 ./generators_ujam/vbassist_notes.py
+python3 ./generators_ujam/vguitarist_notes.py
+```
+
+Native Instruments generators:
+
+```bash
 python3 ./generators_native/drumlab_notes.py
 python3 ./generators_native/playbox_notes.py
 python3 ./generators_native/playseries_notes.py
@@ -218,20 +277,24 @@ python3 ./generators_native/s-percussionist_notes.py
 python3 ./generators_native/session_notes.py
 python3 ./generators_native/spotlight_notes.py
 python3 ./generators_native/trk-01_notes.py
+```
 
+WA Production generators:
+
+```bash
 python3 ./generators_waprod/instachord_notes.py
+python3 ./generators_waprod/instacomposer_sequences.py
+```
 
-python3 ./generators_ujam/beatmaker_notes.py
-python3 ./generators_ujam/drummer_notes.py
-python3 ./generators_ujam/pianist_notes.py
-python3 ./generators_ujam/subcraft_notes.py
-python3 ./generators_ujam/usynth_notes.py
-python3 ./generators_ujam/vbassist_notes.py
-python3 ./generators_ujam/vguitarist_notes.py
-python3 ./generators_ujam/groovemate_notes.py
+Audiomodern generators:
 
+```bash
 python3 ./generators_audiomodern/playbeat_notes.py
+```
 
+reMIDI generators:
+
+```bash
 python3 generators_remidi/remidi_sequences.py
 ```
 
