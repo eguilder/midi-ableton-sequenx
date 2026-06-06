@@ -7,7 +7,8 @@ from mido import Message, MetaMessage, MidiFile, MidiTrack
 OUTPUT_DIR = "notes_se-orch"
 PPQ = 480
 BPM = 120
-NOTE_DURATION_TICKS = PPQ * 4
+DEFAULT_NOTE_DURATION_TICKS = PPQ * 4
+PLAY_NOTE_DURATION_TICKS = PPQ * 16
 NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
 
@@ -61,7 +62,7 @@ for index, note in enumerate(note_range("C3", "B4"), start=1):
     notes_data.append({"file_note": note, "track_name": f"Play {index} {note}"})
 
 
-def create_midi_file(track_name, midi_note):
+def create_midi_file(track_name, midi_note, duration_ticks):
     mid = MidiFile(ticks_per_beat=PPQ)
     track = MidiTrack()
     mid.tracks.append(track)
@@ -79,7 +80,7 @@ def create_midi_file(track_name, midi_note):
         )
     )
     track.append(Message("note_on", note=midi_note, velocity=64, time=0))
-    track.append(Message("note_off", note=midi_note, velocity=64, time=NOTE_DURATION_TICKS))
+    track.append(Message("note_off", note=midi_note, velocity=64, time=duration_ticks))
     track.append(MetaMessage("end_of_track", time=0))
 
     return mid
@@ -108,17 +109,23 @@ def main():
     for file_number, note_info in enumerate(notes_with_midi, start=1):
         track_name = note_info["track_name"]
         midi_note = note_info["midi"]
+        duration_ticks = (
+            PLAY_NOTE_DURATION_TICKS
+            if track_name.startswith("Play ")
+            else DEFAULT_NOTE_DURATION_TICKS
+        )
         safe_filename = track_name.replace(" ", "_")
         filename = f"{file_number:02d} {safe_filename}.mid"
         output_path = os.path.join(OUTPUT_DIR, filename)
 
-        mid = create_midi_file(track_name, midi_note)
+        mid = create_midi_file(track_name, midi_note, duration_ticks)
         mid.save(output_path)
 
         print(f"Created: {filename}")
         print(f"  Track name in Ableton: '{track_name}'")
         print(f"  Note: {note_info['file_note']}")
         print(f"  MIDI note: {midi_note}")
+        print(f"  Duration: {duration_ticks // PPQ:g} beats")
         print(f"  Plays at: {midi_to_standard_note(midi_note)} pitch (standard notation)")
         print()
 
