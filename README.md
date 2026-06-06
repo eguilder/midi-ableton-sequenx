@@ -182,6 +182,9 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 - Renumbers sections sequentially and updates section labels to `Sec 1`, `Sec 2`, etc.
 - Updates active section flags for the number of included sections
 - Outputs `PREFIX_KEY_FullPreset.txt`
+- Requires arguments: `PREFIX` and `KEY` or `ALL`
+- `PREFIX` matches exported section files named like `PREFIX_###_KEY_4Bar.txt`
+- `KEY` must be a valid key such as `Fm`, `Gm`, `Am`, or `F#m`; use `ALL` to build every detected key
 - Run for one key: `python3 ./generators_waprod/instacomposer_sequences.py PREFIX Fm`
 - Run for all detected keys: `python3 ./generators_waprod/instacomposer_sequences.py PREFIX ALL`
 
@@ -196,6 +199,9 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 
 Generates fully structured song arrangements for use with reMIDI 3, which is a phrase-based MIDI engine.
 Unlike static note generators, this system creates complete compositions with section-based logic, timing alignment, and controlled randomness.
+
+`remidi_sequences.py` requires a `section_type` argument: `drums`, `bass`, `pads`, or `all`.
+Optional arguments are `--rows 0,1,2,3`, `--note-length 4`, and `--section-length 168`.
 
 ### 1. Drums
 **Drum Sections**
@@ -283,7 +289,8 @@ WA Production generators:
 
 ```bash
 python3 ./generators_waprod/instachord_notes.py
-python3 ./generators_waprod/instacomposer_sequences.py
+python3 ./generators_waprod/instacomposer_sequences.py PREFIX Fm
+python3 ./generators_waprod/instacomposer_sequences.py PREFIX ALL
 ```
 
 Audiomodern generators:
@@ -295,7 +302,8 @@ python3 ./generators_audiomodern/playbeat_notes.py
 reMIDI generators:
 
 ```bash
-python3 generators_remidi/remidi_sequences.py
+python3 generators_remidi/remidi_sequences.py all
+python3 generators_remidi/remidi_sequences.py drums --rows 0,1,2,3 --note-length 4 --section-length 168
 ```
 
 Each script creates a separate folder of **Ableton-ready MIDI clips**, numbered and named for immediate use in the corresponding plugin track.
