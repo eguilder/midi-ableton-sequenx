@@ -4,7 +4,7 @@ import mido
 from mido import Message, MetaMessage, MidiFile, MidiTrack
 
 
-OUTPUT_DIR = "notes_se-ujam"
+OUTPUT_DIR = "notes_se-drums"
 PPQ = 480
 BPM = 120
 NOTE_DURATION_TICKS = PPQ * 4
@@ -35,8 +35,20 @@ def note_range(start_note, end_note):
 
 notes_data = []
 
+special_common_notes = {
+    "C#2": "Hits 1",
+    "D#2": "Hits 2",
+    "F#2": "Metals 1",
+    "G#2": "Metals 2",
+    "A#2": "Metals 3",
+}
+
 for index, note in enumerate(note_range("C2", "B2"), start=1):
-    notes_data.append({"file_note": note, "track_name": f"Common Phrase {index} {note}"})
+    if note in special_common_notes:
+        label = special_common_notes[note]
+        notes_data.append({"file_note": note, "track_name": f"{label} {note}"})
+    else:
+        notes_data.append({"file_note": note, "track_name": f"Common Phrase {index} {note}"})
 
 special_style_notes = {
     "C#3": "Intro 1",
@@ -98,7 +110,7 @@ def main():
     notes_with_midi.sort(key=lambda note_info: note_info["midi"])
 
     print("=" * 70)
-    print("SE-UJAM NOTE GENERATOR WITH TRACK-NAME FILENAMES")
+    print("SE-DRUMS NOTE GENERATOR WITH TRACK-NAME FILENAMES")
     print("=" * 70)
     print(f"Generating {len(notes_with_midi)} notes in '{OUTPUT_DIR}' folder")
     print("Files are numbered sequentially from lowest to highest note")
@@ -138,8 +150,10 @@ def main():
         )
 
     print()
-    print("SE-UJAM PATTERN ORGANIZATION:")
+    print("SE-DRUMS PATTERN ORGANIZATION:")
     print("Common Phrases: C2 through B2")
+    print("Hits: C#2 and D#2")
+    print("Metals: F#2, G#2, and A#2")
     print("Style Phrases: C3 through D4, excluding intro/fill/ending trigger notes")
     print("Intros: C#3 and D#3")
     print("Fills: F#3, G#3, and A#3")
