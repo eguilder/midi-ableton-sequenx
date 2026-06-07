@@ -176,6 +176,15 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 - Groove output folder: `grooves_stylus` (4-bar clips)
 - Hit output folder: `hits_stylus` (2-bar clips)
 
+### 2. Stylus Sequence Generator (`stylus_sequences.py`)
+**Randomized groove sequence clips**:
+- Output folder: `sequences_stylus`
+- Creates 8 Normal Sequence clips and 8 Extended Sequence clips
+- Each sequence contains 8 unique notes
+- **Normal Sequence 1-8** -> first note `C3`, then 7 random notes from **C3-A5**
+- **Extended Sequence 1-8** -> first note `C1`, then 7 random notes from **C1-B2**
+- Each note is 4 bars long
+
 ---
 
 ## WA Production Generators
@@ -301,6 +310,7 @@ Spectrasonics generators:
 
 ```bash
 python3 ./generators_spectrasonics/stylus_grooves.py
+python3 ./generators_spectrasonics/stylus_sequences.py
 ```
 
 WA Production generators:
