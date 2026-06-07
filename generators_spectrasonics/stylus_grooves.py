@@ -39,11 +39,13 @@ def midi_to_note(midi):
 def build_notes_data(start_note, end_note):
     start_midi = note_to_midi(start_note)
     end_midi = note_to_midi(end_note)
+    normal_start_midi = note_to_midi("C3")
+    normal_end_midi = note_to_midi("G4")
 
     notes_data = []
     for midi in range(start_midi, end_midi + 1):
         file_note = midi_to_note(midi)
-        range_label = "Extended Range" if midi <= note_to_midi("B2") else "Normal Range"
+        range_label = "Normal Range" if normal_start_midi <= midi <= normal_end_midi else "Extended Range"
 
         notes_data.append({
             "file_note": file_note,
@@ -64,7 +66,7 @@ print(f"Generating {len(notes_data)} notes in each output folder")
 print("- Filenames match Ableton MIDI clip names")
 print("- Files numbered sequentially from lowest to highest note")
 print("- Range: C1 through A5 in Ableton notation")
-print("- Labels: C1-B2 Extended Range, C3-A5 Normal Range")
+print("- Labels: C1-B2 and G#4-A5 Extended Range, C3-G4 Normal Range")
 for output_set in output_sets:
     print(f"- {output_set['name']}: {output_set['output_dir']} ({output_set['bars']} bars)")
 print()
@@ -79,6 +81,10 @@ for output_set in output_sets:
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+
+    for filename in os.listdir(output_dir):
+        if filename.endswith(".mid"):
+            os.remove(os.path.join(output_dir, filename))
 
     os.chdir(output_dir)
 

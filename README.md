@@ -172,7 +172,8 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 ### 1. Stylus Generator (`stylus_grooves.py`)
 **Groove triggering across extended and normal ranges**:
 - **C1-B2** -> Extended Range grooves
-- **C3-A5** -> Normal Range grooves
+- **C3-G4** -> Normal Range grooves
+- **G#4-A5** -> Extended Range grooves
 - Groove output folder: `grooves_stylus` (4-bar clips)
 - Hit output folder: `hits_stylus` (2-bar clips)
 
@@ -181,7 +182,7 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 - Output folder: `sequences_stylus`
 - Creates 8 Normal Sequence clips and 8 Extended Sequence clips
 - Each sequence contains 8 unique notes
-- **Normal Sequence 1-8** -> first note `C3`, then 7 random notes from **C3-A5**
+- **Normal Sequence 1-8** -> first note `C3`, then 7 random notes from **C3-G4**
 - **Extended Sequence 1-8** -> first note `C1`, then 7 random notes from **C1-B2**
 - Each note is 4 bars long
 

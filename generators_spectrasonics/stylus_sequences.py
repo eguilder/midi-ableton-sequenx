@@ -92,7 +92,7 @@ def save_sequence(sequence_name, file_number, notes):
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    normal_range = build_range("C3", "A5")
+    normal_range = build_range("C3", "G4")
     extended_range = build_range("C1", "B2")
 
     sequence_sets = [
@@ -117,7 +117,7 @@ def main():
     print(f"Sequences per range: {SEQUENCE_COUNT}")
     print(f"Notes per sequence: {NOTES_PER_SEQUENCE}")
     print(f"Note length: {NOTE_LENGTH_BARS} bars")
-    print("- Normal range: C3-A5, first note C3")
+    print("- Normal range: C3-G4, first note C3")
     print("- Extended range: C1-B2, first note C1")
     print()
 
