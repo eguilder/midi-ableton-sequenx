@@ -5,9 +5,12 @@ import mido
 from mido import Message, MetaMessage, MidiFile, MidiTrack
 
 
+PPQ = 480
+TICKS_PER_BAR = PPQ * 4
+
 output_sets = [
-    {"name": "Grooves", "output_dir": "grooves_stylus", "note_length": 7680, "bars": 16},
-    {"name": "Hits", "output_dir": "hits_stylus", "note_length": 3840, "bars": 8},
+    {"name": "Grooves", "output_dir": "grooves_stylus", "bars": 4},
+    {"name": "Hits", "output_dir": "hits_stylus", "bars": 2},
 ]
 
 
@@ -72,7 +75,7 @@ original_dir = os.getcwd()
 
 for output_set in output_sets:
     output_dir = output_set["output_dir"]
-    note_length = output_set["note_length"]
+    note_length = output_set["bars"] * TICKS_PER_BAR
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -90,7 +93,7 @@ for output_set in output_sets:
 
         frequency = 440.0 * (2.0 ** ((ableton_midi - 69) / 12.0))
 
-        mid = MidiFile()
+        mid = MidiFile(ticks_per_beat=PPQ)
         track = MidiTrack()
         mid.tracks.append(track)
 

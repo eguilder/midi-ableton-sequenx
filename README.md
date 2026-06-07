@@ -173,8 +173,8 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 **Groove triggering across extended and normal ranges**:
 - **C1-B2** -> Extended Range grooves
 - **C3-A5** -> Normal Range grooves
-- Groove output folder: `grooves_stylus` (16-bar clips)
-- Hit output folder: `hits_stylus` (8-bar clips)
+- Groove output folder: `grooves_stylus` (4-bar clips)
+- Hit output folder: `hits_stylus` (2-bar clips)
 
 ---
 
