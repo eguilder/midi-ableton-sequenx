@@ -83,7 +83,7 @@ def build_section_flags(section_count):
 def detect_keys(prefix):
 
     pattern = re.compile(
-        rf"^{re.escape(prefix)}_\d+_([A-G]#?m?)_4Bar\.txt$"
+        rf"^{re.escape(prefix)}_\d+_([A-G]#?(?:maj|m))_4Bar\.txt$"
     )
 
     keys = set()
@@ -273,22 +273,28 @@ def print_help():
 
     print("Usage:")
     print(
-        "  python build_preset.py PREFIX KEY"
+        "  python instacomposer_sequences.py PREFIX KEY"
     )
     print(
-        "  python build_preset.py PREFIX ALL"
+        "  python instacomposer_sequences.py PREFIX ALL"
     )
     print()
 
     print("Examples:")
     print(
-        "  python build_preset.py PT01FIC3 Fm"
+        "  python instacomposer_sequences.py TMFI2 Cmaj"
     )
     print(
-        "  python build_preset.py PT01FIC3 F#m"
+        "  python instacomposer_sequences.py TMFI2 C#maj"
     )
     print(
-        "  python build_preset.py PT01FIC3 ALL"
+        "  python instacomposer_sequences.py TMFI2 Fm"
+    )
+    print(
+        "  python instacomposer_sequences.py TMFI2 F#m"
+    )
+    print(
+        "  python instacomposer_sequences.py TMFI2 ALL"
     )
     print()
 
@@ -300,7 +306,7 @@ def print_help():
         "  or a valid musical key"
     )
     print(
-        "  Examples: Fm Gm Am F#m"
+        "  Examples: Cmaj C#maj Fm F#m"
     )
 
 
@@ -344,7 +350,7 @@ if __name__ == "__main__":
 
     # Strict key validation
     key_pattern = re.compile(
-        r"^[A-G](#?m?)$"
+        r"^[A-G]#?(?:maj|m)$"
     )
 
     if not key_pattern.match(key):

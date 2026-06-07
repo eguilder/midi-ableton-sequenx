@@ -5,10 +5,10 @@ import mido
 from mido import Message, MetaMessage, MidiFile, MidiTrack
 
 
-output_dir = "grooves_stylus"
-
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+output_sets = [
+    {"name": "Grooves", "output_dir": "grooves_stylus", "note_length": 7680, "bars": 16},
+    {"name": "Hits", "output_dir": "hits_stylus", "note_length": 3840, "bars": 8},
+]
 
 
 note_names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
@@ -55,66 +55,76 @@ notes_data = build_notes_data("C1", "A5")
 
 
 print("=" * 70)
-print("STYLUS GROOVES NOTE GENERATOR WITH TRACK-NAME FILENAMES")
+print("STYLUS NOTE GENERATOR WITH TRACK-NAME FILENAMES")
 print("=" * 70)
-print(f"Generating {len(notes_data)} notes in '{output_dir}' folder")
+print(f"Generating {len(notes_data)} notes in each output folder")
 print("- Filenames match Ableton MIDI clip names")
 print("- Files numbered sequentially from lowest to highest note")
 print("- Range: C1 through A5 in Ableton notation")
 print("- Labels: C1-B2 Extended Range, C3-A5 Normal Range")
+for output_set in output_sets:
+    print(f"- {output_set['name']}: {output_set['output_dir']} ({output_set['bars']} bars)")
 print()
 
 
 original_dir = os.getcwd()
-os.chdir(output_dir)
 
 
-for file_number, note_info in enumerate(notes_data, start=1):
-    file_note = note_info["file_note"]
-    track_name = note_info["track_name"]
-    ableton_midi = note_info["midi"]
+for output_set in output_sets:
+    output_dir = output_set["output_dir"]
+    note_length = output_set["note_length"]
 
-    standard_octave = (ableton_midi // 12) - 1
-    standard_note_index = ableton_midi % 12
-    standard_name = f"{note_names[standard_note_index]}{standard_octave}"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
-    frequency = 440.0 * (2.0 ** ((ableton_midi - 69) / 12.0))
+    os.chdir(output_dir)
 
-    mid = MidiFile()
-    track = MidiTrack()
-    mid.tracks.append(track)
+    for file_number, note_info in enumerate(notes_data, start=1):
+        file_note = note_info["file_note"]
+        track_name = note_info["track_name"]
+        ableton_midi = note_info["midi"]
 
-    track.append(MetaMessage("track_name", name=track_name, time=0))
-    track.append(MetaMessage("set_tempo", tempo=mido.bpm2tempo(120), time=0))
-    track.append(MetaMessage(
-        "time_signature",
-        numerator=4,
-        denominator=4,
-        clocks_per_click=24,
-        notated_32nd_notes_per_beat=8,
-        time=0,
-    ))
+        standard_octave = (ableton_midi // 12) - 1
+        standard_note_index = ableton_midi % 12
+        standard_name = f"{note_names[standard_note_index]}{standard_octave}"
 
-    track.append(Message("note_on", note=ableton_midi, velocity=64, time=0))
-    track.append(Message("note_off", note=ableton_midi, velocity=64, time=7680))
-    track.append(MetaMessage("end_of_track", time=0))
+        frequency = 440.0 * (2.0 ** ((ableton_midi - 69) / 12.0))
 
-    safe_filename = track_name.replace(" ", "_")
-    filename = f"{file_number:02d} {safe_filename}.mid"
-    mid.save(filename)
+        mid = MidiFile()
+        track = MidiTrack()
+        mid.tracks.append(track)
 
-    print(f"Created: {filename}")
-    print(f"  Note: {file_note}")
-    print(f"  MIDI: {ableton_midi}")
-    print(f"  Pitch: {standard_name}")
-    print(f"  Frequency: {frequency:.2f} Hz\n")
+        track.append(MetaMessage("track_name", name=track_name, time=0))
+        track.append(MetaMessage("set_tempo", tempo=mido.bpm2tempo(120), time=0))
+        track.append(MetaMessage(
+            "time_signature",
+            numerator=4,
+            denominator=4,
+            clocks_per_click=24,
+            notated_32nd_notes_per_beat=8,
+            time=0,
+        ))
 
+        track.append(Message("note_on", note=ableton_midi, velocity=64, time=0))
+        track.append(Message("note_off", note=ableton_midi, velocity=64, time=note_length))
+        track.append(MetaMessage("end_of_track", time=0))
 
-os.chdir(original_dir)
+        safe_filename = track_name.replace(" ", "_")
+        filename = f"{file_number:02d} {safe_filename}.mid"
+        mid.save(filename)
+
+        print(f"Created: {output_dir}/{filename}")
+        print(f"  Note: {file_note}")
+        print(f"  MIDI: {ableton_midi}")
+        print(f"  Pitch: {standard_name}")
+        print(f"  Bars: {output_set['bars']}")
+        print(f"  Frequency: {frequency:.2f} Hz\n")
+
+    os.chdir(original_dir)
 
 
 print("=" * 70)
-print(f"SUCCESS! Created {len(notes_data)} MIDI files.")
+print(f"SUCCESS! Created {len(notes_data) * len(output_sets)} MIDI files.")
 print()
 print("FILES CREATED (sequentially numbered with track names):")
 print("-" * 70)

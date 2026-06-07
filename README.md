@@ -173,8 +173,8 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 **Groove triggering across extended and normal ranges**:
 - **C1-B2** -> Extended Range grooves
 - **C3-A5** -> Normal Range grooves
-- Output folder: `grooves_stylus`
-- Each generated clip is 16 bars long
+- Groove output folder: `grooves_stylus` (16-bar clips)
+- Hit output folder: `hits_stylus` (8-bar clips)
 
 ---
 
@@ -196,8 +196,8 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 - Outputs `PREFIX_KEY_FullPreset.txt`
 - Requires arguments: `PREFIX` and `KEY` or `ALL`
 - `PREFIX` matches exported section files named like `PREFIX_###_KEY_4Bar.txt`
-- `KEY` must be a valid key such as `Fm`, `Gm`, `Am`, or `F#m`; use `ALL` to build every detected key
-- Run for one key: `python3 ./generators_waprod/instacomposer_sequences.py PREFIX Fm`
+- `KEY` must be a valid exported major or minor key such as `Cmaj`, `C#maj`, `Fm`, or `F#m`; use `ALL` to build every detected key
+- Run for one key: `python3 ./generators_waprod/instacomposer_sequences.py PREFIX C#maj`
 - Run for all detected keys: `python3 ./generators_waprod/instacomposer_sequences.py PREFIX ALL`
 
 ---
@@ -307,7 +307,7 @@ WA Production generators:
 
 ```bash
 python3 ./generators_waprod/instachord_notes.py
-python3 ./generators_waprod/instacomposer_sequences.py PREFIX Fm
+python3 ./generators_waprod/instacomposer_sequences.py PREFIX C#maj
 python3 ./generators_waprod/instacomposer_sequences.py PREFIX ALL
 ```
 
