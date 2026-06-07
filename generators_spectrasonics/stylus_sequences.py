@@ -64,7 +64,13 @@ def add_note(track, note):
 
 
 def build_sequence(first_note, note_range):
-    remaining_notes = random.choices(note_range, k=NOTES_PER_SEQUENCE - 1)
+    candidates = [note for note in note_range if note != first_note]
+    remaining_count = NOTES_PER_SEQUENCE - 1
+
+    if len(candidates) < remaining_count:
+        raise ValueError("Note range is too small to build a sequence without repeats")
+
+    remaining_notes = random.sample(candidates, k=remaining_count)
     return [first_note, *remaining_notes]
 
 
