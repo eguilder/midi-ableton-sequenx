@@ -1,6 +1,6 @@
 # MIDI Generators for Ableton Live
 
-A collection of Python scripts for generating MIDI files designed to control sequencer- and phrase-based instruments for usage with **Ableton Live**, **UJAM**, **Native Instruments**, **WA Production** and **Audiomodern** products. All generators create Ableton-ready MIDI clips with correct octave handling, embedded track names, and predictable note layouts. Other DAWs can use these sequencer notes as well.
+A collection of Python scripts for generating MIDI files designed to control sequencer- and phrase-based instruments for usage with **Ableton Live**, **UJAM**, **Native Instruments**, **Spectrasonics**, **WA Production** and **Audiomodern** products. All generators create Ableton-ready MIDI clips with correct octave handling, embedded track names, and predictable note layouts. Other DAWs can use these sequencer notes as well.
 
 The MIDI clips in this repo can either be generated via scripts or used directly inside Ableton Live.
 
@@ -23,9 +23,10 @@ Generators are organized by target ecosystem and workflow:
 1. **Ableton-native generators**: General-purpose note, instrument-note, and chord/progression MIDI clips.
 2. **UJAM generators**: Beatmaker, drummer, bassist, guitarist, pianist, synth, Groovemate, SE-DRUMS, and SE-ORCHESTRA trigger-note layouts.
 3. **Native Instruments generators**: Kontakt and NI-style phrase, chord, groove, and sound/pattern trigger layouts.
-4. **WA Production generators**: Instachord MIDI trigger grids and Instacomposer 3 preset assembly from exported section files.
-5. **Audiomodern generators**: Playbeat remix groove trigger clips.
-6. **reMIDI generators**: Structured drum, bass, and pad sequence generators for arrangement-style MIDI output.
+4. **Spectrasonics generators**: Stylus groove trigger clips across extended and normal ranges.
+5. **WA Production generators**: Instachord MIDI trigger grids and Instacomposer 3 preset assembly from exported section files.
+6. **Audiomodern generators**: Playbeat remix groove trigger clips.
+7. **reMIDI generators**: Structured drum, bass, and pad sequence generators for arrangement-style MIDI output.
 
 ---
 
@@ -166,6 +167,17 @@ These generators follow **Native Instruments’ phrase-based keyboard layouts**,
 
 ---
 
+## Spectrasonics Generators
+
+### 1. Stylus Generator (`stylus_grooves.py`)
+**Groove triggering across extended and normal ranges**:
+- **C1-B2** -> Extended Range grooves
+- **C3-A5** -> Normal Range grooves
+- Output folder: `grooves_stylus`
+- Each generated clip is 16 bars long
+
+---
+
 ## WA Production Generators
 
 ### 1. Instachord 2
@@ -283,6 +295,12 @@ python3 ./generators_native/s-percussionist_notes.py
 python3 ./generators_native/session_notes.py
 python3 ./generators_native/spotlight_notes.py
 python3 ./generators_native/trk-01_notes.py
+```
+
+Spectrasonics generators:
+
+```bash
+python3 ./generators_spectrasonics/stylus_grooves.py
 ```
 
 WA Production generators:

@@ -96,7 +96,7 @@ for file_number, note_info in enumerate(notes_data, start=1):
     ))
 
     track.append(Message("note_on", note=ableton_midi, velocity=64, time=0))
-    track.append(Message("note_off", note=ableton_midi, velocity=64, time=1920))
+    track.append(Message("note_off", note=ableton_midi, velocity=64, time=7680))
     track.append(MetaMessage("end_of_track", time=0))
 
     safe_filename = track_name.replace(" ", "_")
