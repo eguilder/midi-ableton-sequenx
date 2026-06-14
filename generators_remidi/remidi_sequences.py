@@ -4,6 +4,7 @@ import mido
 from mido import Message, MidiFile, MidiTrack, MetaMessage
 import os
 import random
+import re
 
 # ===== CONFIG =====
 PPQ = 480
@@ -18,7 +19,9 @@ SEQUENCE_COUNT = 8
 MAX_ROW_NUMBER = 7
 DEFAULT_ROWS = [0, 1, 2, 3]
 DEFAULT_NOTE_LENGTH = 4
-DEFAULT_SECTION_LENGTH = 168
+DEFAULT_SECTION_LENGTH = 64
+DEFAULT_START_NOTE = "C2"
+DEFAULT_PAD_COUNT = 16
 
 NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F',
               'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -28,6 +31,37 @@ def midi_to_ableton_name(midi_num):
     octave = (midi_num // 12) - 2
     note_index = midi_num % 12
     return f"{NOTE_NAMES[note_index]}{octave}"
+
+
+def ableton_name_to_midi(note_name):
+    match = re.match(r"^([A-G]#?)(-?\d+)$", note_name)
+    if not match:
+        raise ValueError(f"Invalid note name: {note_name}")
+
+    name, octave = match.groups()
+    return (int(octave) + 2) * 12 + NOTE_NAMES.index(name)
+
+
+def parse_start_note_arg(start_note_string):
+    try:
+        start_midi = ableton_name_to_midi(start_note_string)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("--start-note must be an Ableton note like C2") from exc
+
+    if start_midi < 0 or start_midi > 127:
+        raise argparse.ArgumentTypeError("--start-note must resolve to MIDI note 0-127")
+    return start_midi
+
+
+def parse_pad_count_arg(pad_count_string):
+    try:
+        pad_count = int(pad_count_string)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("--pad-count must be a whole number") from exc
+
+    if pad_count <= 0:
+        raise argparse.ArgumentTypeError("--pad-count must be greater than 0")
+    return pad_count
 
 
 def parse_rows_arg(rows_string):
@@ -80,6 +114,10 @@ def bars_to_note_count(section_length, note_length):
             "--section-length must be an exact multiple of --note-length"
         )
     return int(round(note_count))
+
+
+def map_to_output_range(note, start_midi, pad_count):
+    return start_midi + (note % pad_count)
 
 
 def build_section_map(row_numbers):
@@ -194,7 +232,16 @@ def pick_long_fill(allowed_row_ids):
 
 
 # ===== MAIN GENERATOR =====
-def generate_sequence(index, section_types, section_map, allowed_row_ids, note_duration_ticks, max_note_count):
+def generate_sequence(
+    index,
+    section_types,
+    section_map,
+    allowed_row_ids,
+    note_duration_ticks,
+    max_note_count,
+    start_midi,
+    pad_count
+):
 
     drum_mid = drum_track = None
     bass_mid = bass_track = None
@@ -254,8 +301,12 @@ def generate_sequence(index, section_types, section_map, allowed_row_ids, note_d
             for d_note in drum_structure:
                 if track_note_counts["drums"] >= max_note_count:
                     break
-                add_clip(drum_track, d_note, note_duration_ticks)
+                add_clip(drum_track, map_to_output_range(d_note, start_midi, pad_count), note_duration_ticks)
                 track_note_counts["drums"] += 1
+
+            drum_a = map_to_output_range(drum_a, start_midi, pad_count)
+            drum_b = map_to_output_range(drum_b, start_midi, pad_count)
+            fill = map_to_output_range(fill, start_midi, pad_count)
 
         bass_a = bass_b = None
         if "bass" in section_types and track_note_counts["bass"] < max_note_count:
@@ -270,8 +321,11 @@ def generate_sequence(index, section_types, section_map, allowed_row_ids, note_d
             for bass_note in [bass_a, bass_b]:
                 if track_note_counts["bass"] >= max_note_count:
                     break
-                add_clip(bass_track, bass_note, note_duration_ticks)
+                add_clip(bass_track, map_to_output_range(bass_note, start_midi, pad_count), note_duration_ticks)
                 track_note_counts["bass"] += 1
+
+            bass_a = map_to_output_range(bass_a, start_midi, pad_count)
+            bass_b = map_to_output_range(bass_b, start_midi, pad_count)
 
         pad_notes = ()
         if "pads" in section_types and track_note_counts["pads"] < max_note_count:
@@ -279,8 +333,9 @@ def generate_sequence(index, section_types, section_map, allowed_row_ids, note_d
             for pad_note in pad_notes:
                 if track_note_counts["pads"] >= max_note_count:
                     break
-                add_clip(pad_track, pad_note, note_duration_ticks)
+                add_clip(pad_track, map_to_output_range(pad_note, start_midi, pad_count), note_duration_ticks)
                 track_note_counts["pads"] += 1
+            pad_notes = tuple(map_to_output_range(pad_note, start_midi, pad_count) for pad_note in pad_notes)
 
         debug_entry = {
             "section": section,
@@ -337,7 +392,21 @@ def main():
         dest="section_length",
         type=parse_section_length_arg,
         default=DEFAULT_SECTION_LENGTH,
-        help="Total length in bars of each generated sequence section; default is 168."
+        help="Total length in bars of each generated sequence; default is 64."
+    )
+    parser.add_argument(
+        "--start-note",
+        dest="start_note",
+        type=parse_start_note_arg,
+        default=ableton_name_to_midi(DEFAULT_START_NOTE),
+        help="First Ableton note in the output pad range; default is C2."
+    )
+    parser.add_argument(
+        "--pad-count",
+        dest="pad_count",
+        type=parse_pad_count_arg,
+        default=DEFAULT_PAD_COUNT,
+        help="Number of chromatic pads in the output range; default is 16."
     )
     args = parser.parse_args()
     if args.section_type == "all":
@@ -348,6 +417,11 @@ def main():
     row_numbers = parse_rows_arg(args.rows)
     note_length = args.note_length
     section_length = args.section_length
+    start_midi = args.start_note
+    pad_count = args.pad_count
+    if start_midi + pad_count - 1 > 127:
+        parser.error("--start-note plus --pad-count must stay within MIDI note 0-127")
+
     note_duration_ticks = bars_to_ticks(note_length)
     try:
         max_note_count = bars_to_note_count(section_length, note_length)
@@ -369,6 +443,12 @@ def main():
     print(f"Section length: {section_length:g} bars")
     print(f"Note length: {note_length:g} bars")
     print(f"Notes per sequence: {max_note_count}")
+    print(
+        "Output range: "
+        f"{midi_to_ableton_name(start_midi)} to "
+        f"{midi_to_ableton_name(start_midi + pad_count - 1)} "
+        f"({pad_count} pads)"
+    )
     print("=" * 60)
 
     for i in range(SEQUENCE_COUNT):
@@ -378,11 +458,13 @@ def main():
             section_map,
             allowed_row_ids,
             note_duration_ticks,
-            max_note_count
+            max_note_count,
+            start_midi,
+            pad_count
         )
 
         print(f"\nSequence {i+1:02d}")
-        print("Arrangement:", " → ".join(arrangement))
+        print("Arrangement:", " -> ".join(arrangement))
 
         for entry in debug:
             outputs = []
@@ -400,8 +482,8 @@ def main():
             if outputs:
                 print(f"  {entry['section']}: " + " | ".join(outputs))
 
-    print("\n✓ Done")
-    print("✓ No bass gaps — fully continuous")
+    print("\nDone")
+    print("No bass gaps - fully continuous")
 
 
 if __name__ == "__main__":

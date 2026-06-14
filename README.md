@@ -53,10 +53,11 @@ Generates specific notes for beatmaking with section names:
 
 **Sequence generator (`beatmaker3_sequences.py`)**
 - Creates 5 arrangement-style MIDI files in `sequences_beatmaker3`
-- Each sequence is 64 bars, built from 16 four-bar sections
-- Main sections are sustained 4-bar notes
-- Repeated Verse sections become 2 bars Verse + 2 bars Fill
-- Repeated Chorus sections become 2 bars Chorus + 2 bars Ending
+- Each sequence is 64 bars, built from 16 four-bar blocks
+- Each song starts with a 2-bar Intro followed by 2 bars of Verse, Chorus, or Special
+- Body blocks are either 4 bars of Verse, Chorus, or Special, or 3 bars plus a 1-bar Fill/Break
+- Break notes only appear as the fourth bar before the next Verse or Chorus block
+- Each song ends with 3 bars of Verse, Chorus, or Special plus a 1-bar Ending
 
 ### 2. Beatmaker 2 Generator (`beatmaker2_notes.py`)
 Generates Beatmaker 2 groove notes from C3 through B4:
@@ -65,11 +66,11 @@ Generates Beatmaker 2 groove notes from C3 through B4:
 
 **Sequence generator (`beatmaker2_sequences.py`)**
 - Creates 5 arrangement-style MIDI files in `sequences_beatmaker2`
-- Each sequence is 64 bars, built from 16 four-bar sections
-- Main sections are sustained 4-bar notes
-- Repeated Verse sections become 2 bars Verse + 2 bars Fill
-- Repeated Chorus sections become 2 bars Chorus + 2 bars Ending
-- Final Ending sections resolve with Stop on the last bar
+- Each sequence is 64 bars, built from 16 four-bar blocks
+- Each song starts with a 2-bar Intro followed by 2 bars of Verse, Chorus, or Special
+- Body blocks are either 4 bars of Verse, Chorus, or Special, or 3 bars plus a 1-bar Fill/Breakdown
+- Breakdown notes only appear as the fourth bar before the next Verse or Chorus block
+- Each song ends with 3 bars of Verse, Chorus, or Special plus a 1-bar Ending
 
 ### 3. Subcraft Generator (`subcraft_notes.py`)
 Generates C2 through E2 with loop patterns:
@@ -250,7 +251,8 @@ Generates fully structured song arrangements for use with reMIDI 3, which is a p
 Unlike static note generators, this system creates complete compositions with section-based logic, timing alignment, and controlled randomness.
 
 `remidi_sequences.py` requires a `section_type` argument: `drums`, `bass`, `pads`, or `all`.
-Optional arguments are `--rows 0,1,2,3`, `--note-length 4`, and `--section-length 168`.
+Optional arguments are `--rows 0,1,2,3`, `--note-length 4`, `--section-length 64`, `--start-note C2`, and `--pad-count 16`.
+By default, generated output notes are mapped to 16 chromatic pads from C2 through D#3.
 
 ### 1. Drums
 **Drum Sections**
@@ -361,7 +363,7 @@ reMIDI generators:
 
 ```bash
 python3 generators_remidi/remidi_sequences.py all
-python3 generators_remidi/remidi_sequences.py drums --rows 0,1,2,3 --note-length 4 --section-length 168
+python3 generators_remidi/remidi_sequences.py drums --rows 0,1,2,3 --note-length 4 --section-length 64 --start-note C2 --pad-count 16
 ```
 
 Each script creates a separate folder of **Ableton-ready MIDI clips**, numbered and named for immediate use in the corresponding plugin track.

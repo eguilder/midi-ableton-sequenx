@@ -39,96 +39,102 @@ NOTES_DATA = [
     {"file_note": "B4", "track_name": "Stop B4"},
 ]
 
+BODY_SECTIONS = {"verse", "chorus", "special"}
+MAIN_SECTIONS = {"verse", "chorus"}
+TRANSITIONS = {"fill", "breakdown", "ending"}
+
+# Each tuple is one 4-bar block: (section, optional_bar_4_transition).
+# The intro block is 2 bars intro + 2 bars of the named body section.
 ARRANGEMENTS = [
     [
-        "intro",
-        "verse",
-        "verse",
-        "chorus",
-        "special",
-        "verse",
-        "verse",
-        "chorus",
-        "breakdown",
-        "chorus",
-        "special",
-        "verse",
-        "chorus",
-        "breakdown",
-        "chorus",
-        "ending",
+        ("intro", "verse"),
+        ("verse", "fill"),
+        ("chorus", "breakdown"),
+        ("verse", None),
+        ("chorus", "fill"),
+        ("special", None),
+        ("verse", "fill"),
+        ("chorus", None),
+        ("verse", "fill"),
+        ("chorus", "breakdown"),
+        ("verse", None),
+        ("special", None),
+        ("chorus", "fill"),
+        ("verse", "breakdown"),
+        ("chorus", None),
+        ("chorus", "ending"),
     ],
     [
-        "intro",
-        "verse",
-        "verse",
-        "verse",
-        "chorus",
-        "chorus",
-        "special",
-        "verse",
-        "breakdown",
-        "chorus",
-        "chorus",
-        "verse",
-        "special",
-        "chorus",
-        "breakdown",
-        "ending",
+        ("intro", "chorus"),
+        ("special", None),
+        ("verse", "breakdown"),
+        ("chorus", "fill"),
+        ("verse", None),
+        ("special", None),
+        ("chorus", "breakdown"),
+        ("verse", "fill"),
+        ("chorus", None),
+        ("special", None),
+        ("verse", "breakdown"),
+        ("chorus", "fill"),
+        ("verse", None),
+        ("chorus", "breakdown"),
+        ("verse", None),
+        ("chorus", "ending"),
     ],
     [
-        "intro",
-        "verse",
-        "verse",
-        "chorus",
-        "chorus",
-        "breakdown",
-        "verse",
-        "verse",
-        "chorus",
-        "special",
-        "breakdown",
-        "chorus",
-        "verse",
-        "chorus",
-        "chorus",
-        "ending",
+        ("intro", "verse"),
+        ("verse", None),
+        ("special", None),
+        ("verse", "fill"),
+        ("chorus", "breakdown"),
+        ("chorus", None),
+        ("special", None),
+        ("verse", "breakdown"),
+        ("chorus", "fill"),
+        ("special", None),
+        ("verse", None),
+        ("chorus", "breakdown"),
+        ("chorus", None),
+        ("special", None),
+        ("verse", "fill"),
+        ("chorus", "ending"),
     ],
     [
-        "intro",
-        "verse",
-        "special",
-        "verse",
-        "chorus",
-        "breakdown",
-        "breakdown",
-        "chorus",
-        "verse",
-        "chorus",
-        "special",
-        "verse",
-        "chorus",
-        "chorus",
-        "breakdown",
-        "ending",
+        ("intro", "special"),
+        ("verse", "fill"),
+        ("special", None),
+        ("verse", "fill"),
+        ("chorus", None),
+        ("special", None),
+        ("chorus", "breakdown"),
+        ("verse", None),
+        ("chorus", "fill"),
+        ("special", None),
+        ("verse", "breakdown"),
+        ("chorus", None),
+        ("special", None),
+        ("verse", "fill"),
+        ("chorus", None),
+        ("verse", "ending"),
     ],
     [
-        "intro",
-        "special",
-        "verse",
-        "verse",
-        "chorus",
-        "special",
-        "chorus",
-        "breakdown",
-        "verse",
-        "verse",
-        "special",
-        "chorus",
-        "breakdown",
-        "verse",
-        "chorus",
-        "ending",
+        ("intro", "verse"),
+        ("special", None),
+        ("verse", "fill"),
+        ("verse", "breakdown"),
+        ("chorus", None),
+        ("special", None),
+        ("chorus", "fill"),
+        ("special", None),
+        ("verse", "breakdown"),
+        ("verse", None),
+        ("chorus", "fill"),
+        ("special", None),
+        ("chorus", "breakdown"),
+        ("verse", None),
+        ("chorus", None),
+        ("chorus", "ending"),
     ],
 ]
 
@@ -151,60 +157,69 @@ def group(notes, prefix):
     return [note for note in notes if note["track_name"].startswith(prefix)]
 
 
+def validate_arrangement(blocks, filename):
+    if len(blocks) != 16:
+        raise ValueError(f"{filename} must have 16 four-bar blocks")
+
+    first_section, first_body = blocks[0]
+    if first_section != "intro" or first_body not in BODY_SECTIONS:
+        raise ValueError(f"{filename} must start with 2 bars intro plus a body section")
+
+    for block_index, (section_type, transition) in enumerate(blocks[1:], start=1):
+        if section_type not in BODY_SECTIONS:
+            raise ValueError(f"{filename} block {block_index + 1} must use Verse, Chorus, or Special")
+        if transition is not None and transition not in TRANSITIONS:
+            raise ValueError(f"{filename} block {block_index + 1} has invalid transition {transition}")
+
+    for block_index, (section_type, transition) in enumerate(blocks[:-1]):
+        if transition == "ending":
+            raise ValueError(f"{filename} may only use Ending in the final block")
+        if transition == "breakdown":
+            next_section = blocks[block_index + 1][0]
+            if next_section not in MAIN_SECTIONS:
+                raise ValueError(f"{filename} has a Breakdown before {next_section}")
+
+    final_section, final_transition = blocks[-1]
+    if final_section not in BODY_SECTIONS or final_transition != "ending":
+        raise ValueError(f"{filename} must end with 3 bars body + 1 bar Ending")
+
+
 def add_note(track, midi_note, bars):
     track.append(Message("note_on", note=midi_note, velocity=100, time=0))
     track.append(Message("note_off", note=midi_note, velocity=0, time=TICKS_PER_BAR * bars))
 
 
-def add_section(track, section_type, cycles, is_repeat=False):
+def add_body(track, section_type, cycles, bars):
+    add_note(track, next(cycles[section_type])["midi"], bars)
+
+
+def add_transition(track, transition, cycles):
+    add_note(track, next(cycles[transition])["midi"], 1)
+
+
+def add_block(track, section_type, transition, cycles):
     if section_type == "intro":
-        midi_note = next(cycles["intro"])["midi"]
-        add_note(track, midi_note, 4)
+        add_note(track, next(cycles["intro"])["midi"], 2)
+        add_body(track, transition, cycles, 2)
         return
 
-    if section_type == "verse":
-        verse_note = next(cycles["verse"])["midi"]
-        if is_repeat:
-            add_note(track, verse_note, 2)
-            add_note(track, next(cycles["fill"])["midi"], 2)
-        else:
-            add_note(track, verse_note, 4)
+    if transition is None:
+        add_body(track, section_type, cycles, 4)
         return
 
-    if section_type == "chorus":
-        chorus_note = next(cycles["chorus"])["midi"]
-        if is_repeat:
-            add_note(track, chorus_note, 2)
-            add_note(track, next(cycles["ending"])["midi"], 2)
-        else:
-            add_note(track, chorus_note, 4)
-        return
-
-    if section_type == "special":
-        midi_note = next(cycles["special"])["midi"]
-        add_note(track, midi_note, 4)
-        return
-
-    if section_type == "breakdown":
-        midi_note = next(cycles["breakdown"])["midi"]
-        add_note(track, midi_note, 4)
-        return
-
-    if section_type == "ending":
-        ending_note = next(cycles["ending"])["midi"]
-        stop_note = next(cycles["stop"])["midi"]
-        add_note(track, ending_note, 3)
-        add_note(track, stop_note, 1)
-        return
-
-    raise ValueError(f"Unknown section type: {section_type}")
+    add_body(track, section_type, cycles, 3)
+    add_transition(track, transition, cycles)
 
 
-def build_sequence(structure, filename, groups):
-    if len(structure) != 16:
-        raise ValueError(f"{filename} must have 16 sections")
+def rotate_group(group_items, offset):
+    offset = offset % len(group_items)
+    return group_items[offset:] + group_items[:offset]
 
-    cycles = {key: itertools.cycle(value) for key, value in groups.items()}
+
+def build_sequence(blocks, filename, groups, sequence_index):
+    validate_arrangement(blocks, filename)
+
+    cycles = {key: itertools.cycle(rotate_group(value, sequence_index)) for key, value in groups.items()}
 
     mid = MidiFile(ticks_per_beat=PPQ)
     track = MidiTrack()
@@ -214,11 +229,8 @@ def build_sequence(structure, filename, groups):
     track.append(MetaMessage("set_tempo", tempo=mido.bpm2tempo(120), time=0))
     track.append(MetaMessage("time_signature", numerator=4, denominator=4, time=0))
 
-    previous_section_type = None
-    for section_type in structure:
-        is_repeat = section_type in ("verse", "chorus") and section_type == previous_section_type
-        add_section(track, section_type, cycles, is_repeat=is_repeat)
-        previous_section_type = section_type
+    for section_type, transition in blocks:
+        add_block(track, section_type, transition, cycles)
 
     track.append(MetaMessage("end_of_track", time=0))
     mid.save(os.path.join(OUTPUT_DIR, filename))
@@ -236,14 +248,13 @@ def main():
         "ending": group(notes, "Ending"),
         "special": group(notes, "Special"),
         "breakdown": group(notes, "Breakdown"),
-        "stop": group(notes, "Stop"),
     }
 
     print("Generating Beatmaker 2 sequences (64 bars)...\n")
 
     for index, arrangement in enumerate(ARRANGEMENTS, start=1):
         filename = f"{index:02d}_sequence.mid"
-        build_sequence(arrangement, filename, groups)
+        build_sequence(arrangement, filename, groups, index - 1)
         print(f"Created {filename}")
 
     print("\nDone.")
