@@ -6,23 +6,37 @@ import mido
 from mido import Message, MetaMessage, MidiFile, MidiTrack
 
 
-OUTPUT_DIR = "sequences_beatmaker3"
+OUTPUT_DIR = "sequences_beatmaker2"
 PPQ = 480
 TICKS_PER_BAR = PPQ * 4
 
 NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
 NOTES_DATA = [
-    {"file_note": "C#1", "track_name": "Intro C#1"},
-    {"file_note": "D#1", "track_name": "Fill 1 D#1"},
-    {"file_note": "F#1", "track_name": "Verse 1 F#1"},
-    {"file_note": "G#1", "track_name": "Verse 2 G#1"},
-    {"file_note": "A#1", "track_name": "Fill 2 A#1"},
-    {"file_note": "C#2", "track_name": "Chorus 1 C#2"},
-    {"file_note": "D#2", "track_name": "Chorus 2 D#2"},
-    {"file_note": "F#2", "track_name": "Break F#2"},
-    {"file_note": "G#2", "track_name": "Special G#2"},
-    {"file_note": "A#2", "track_name": "Ending A#2"},
+    {"file_note": "C3", "track_name": "Verse 1 C3"},
+    {"file_note": "C#3", "track_name": "Intro 1 C#3"},
+    {"file_note": "D3", "track_name": "Verse 2 D3"},
+    {"file_note": "D#3", "track_name": "Intro 2 D#3"},
+    {"file_note": "E3", "track_name": "Verse 3 E3"},
+    {"file_note": "F3", "track_name": "Verse 4 F3"},
+    {"file_note": "F#3", "track_name": "Fill 1 F#3"},
+    {"file_note": "G3", "track_name": "Verse 5 G3"},
+    {"file_note": "G#3", "track_name": "Fill 2 G#3"},
+    {"file_note": "A3", "track_name": "Chorus 1 A3"},
+    {"file_note": "A#3", "track_name": "Fill 3 A#3"},
+    {"file_note": "B3", "track_name": "Chorus 2 B3"},
+    {"file_note": "C4", "track_name": "Chorus 3 C4"},
+    {"file_note": "C#4", "track_name": "Ending 1 C#4"},
+    {"file_note": "D4", "track_name": "Chorus 4 D4"},
+    {"file_note": "D#4", "track_name": "Ending 2 D#4"},
+    {"file_note": "E4", "track_name": "Chorus 5 E4"},
+    {"file_note": "F4", "track_name": "Special 1 F4"},
+    {"file_note": "F#4", "track_name": "Breakdown 1 F#4"},
+    {"file_note": "G4", "track_name": "Special 2 G4"},
+    {"file_note": "G#4", "track_name": "Breakdown 2 G#4"},
+    {"file_note": "A4", "track_name": "Special 3 A4"},
+    {"file_note": "A#4", "track_name": "Breakdown 3 A#4"},
+    {"file_note": "B4", "track_name": "Stop B4"},
 ]
 
 ARRANGEMENTS = [
@@ -31,17 +45,17 @@ ARRANGEMENTS = [
         "verse",
         "verse",
         "chorus",
-        "chorus",
-        "verse",
-        "verse",
-        "break",
-        "chorus",
-        "chorus",
         "special",
         "verse",
         "verse",
         "chorus",
+        "breakdown",
+        "chorus",
         "special",
+        "verse",
+        "chorus",
+        "breakdown",
+        "chorus",
         "ending",
     ],
     [
@@ -53,13 +67,13 @@ ARRANGEMENTS = [
         "chorus",
         "special",
         "verse",
-        "break",
+        "breakdown",
         "chorus",
         "chorus",
         "verse",
         "special",
         "chorus",
-        "chorus",
+        "breakdown",
         "ending",
     ],
     [
@@ -68,13 +82,13 @@ ARRANGEMENTS = [
         "verse",
         "chorus",
         "chorus",
-        "break",
+        "breakdown",
         "verse",
         "verse",
         "chorus",
-        "chorus",
-        "break",
         "special",
+        "breakdown",
+        "chorus",
         "verse",
         "chorus",
         "chorus",
@@ -83,19 +97,19 @@ ARRANGEMENTS = [
     [
         "intro",
         "verse",
+        "special",
         "verse",
         "chorus",
+        "breakdown",
+        "breakdown",
         "chorus",
-        "break",
-        "break",
-        "chorus",
+        "verse",
         "chorus",
         "special",
         "verse",
-        "verse",
         "chorus",
         "chorus",
-        "special",
+        "breakdown",
         "ending",
     ],
     [
@@ -106,12 +120,12 @@ ARRANGEMENTS = [
         "chorus",
         "special",
         "chorus",
-        "break",
+        "breakdown",
         "verse",
         "verse",
         "special",
         "chorus",
-        "chorus",
+        "breakdown",
         "verse",
         "chorus",
         "ending",
@@ -144,7 +158,8 @@ def add_note(track, midi_note, bars):
 
 def add_section(track, section_type, cycles, is_repeat=False):
     if section_type == "intro":
-        add_note(track, next(cycles["intro"])["midi"], 4)
+        midi_note = next(cycles["intro"])["midi"]
+        add_note(track, midi_note, 4)
         return
 
     if section_type == "verse":
@@ -165,16 +180,21 @@ def add_section(track, section_type, cycles, is_repeat=False):
             add_note(track, chorus_note, 4)
         return
 
-    if section_type == "break":
-        add_note(track, next(cycles["break"])["midi"], 4)
+    if section_type == "special":
+        midi_note = next(cycles["special"])["midi"]
+        add_note(track, midi_note, 4)
         return
 
-    if section_type == "special":
-        add_note(track, next(cycles["special"])["midi"], 4)
+    if section_type == "breakdown":
+        midi_note = next(cycles["breakdown"])["midi"]
+        add_note(track, midi_note, 4)
         return
 
     if section_type == "ending":
-        add_note(track, next(cycles["ending"])["midi"], 4)
+        ending_note = next(cycles["ending"])["midi"]
+        stop_note = next(cycles["stop"])["midi"]
+        add_note(track, ending_note, 3)
+        add_note(track, stop_note, 1)
         return
 
     raise ValueError(f"Unknown section type: {section_type}")
@@ -213,12 +233,13 @@ def main():
         "verse": group(notes, "Verse"),
         "fill": group(notes, "Fill"),
         "chorus": group(notes, "Chorus"),
-        "break": group(notes, "Break"),
-        "special": group(notes, "Special"),
         "ending": group(notes, "Ending"),
+        "special": group(notes, "Special"),
+        "breakdown": group(notes, "Breakdown"),
+        "stop": group(notes, "Stop"),
     }
 
-    print("Generating Beatmaker 3 sequences (64 bars)...\n")
+    print("Generating Beatmaker 2 sequences (64 bars)...\n")
 
     for index, arrangement in enumerate(ARRANGEMENTS, start=1):
         filename = f"{index:02d}_sequence.mid"

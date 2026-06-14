@@ -8,6 +8,9 @@ output_dir = "notes_beatmaker3"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
+PPQ = 480
+TICKS_PER_BAR = PPQ * 4
+
 # List of notes with their custom track names
 notes_data = [
     {"file_note": "C#1", "track_name": "Intro C#1"},
@@ -26,13 +29,18 @@ print("=" * 70)
 print("BEATMAKER NOTE GENERATOR WITH TRACK-NAME FILENAMES")
 print("=" * 70)
 print(f"Generating {len(notes_data)} notes in '{output_dir}' folder")
-print("✓ Filenames match Ableton MIDI clip names")
-print("✓ Files numbered sequentially from lowest to highest note")
+print("Filenames match Ableton MIDI clip names")
+print("Files numbered sequentially from lowest to highest note")
 print()
 
 # Note mapping for Ableton
 # In Ableton: C-2 = MIDI 0, C-1 = MIDI 12, C0 = MIDI 24, C1 = MIDI 36, etc.
 note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+def note_length_bars(track_name):
+    if track_name.startswith(("Fill", "Ending")):
+        return 2
+    return 4
 
 # First, calculate MIDI numbers for all notes and sort them
 notes_with_midi = []
@@ -100,9 +108,10 @@ for file_number, note_info in enumerate(notes_with_midi, start=1):
     track.append(MetaMessage('time_signature', numerator=4, denominator=4, 
                             clocks_per_click=24, notated_32nd_notes_per_beat=8, time=0))
     
-    # Add note (8 bars at 120 BPM = 3840 ticks)
+    # Add note with a section-aware clip length.
+    length_bars = note_length_bars(track_name)
     track.append(Message('note_on', note=ableton_midi, velocity=64, time=0))
-    track.append(Message('note_off', note=ableton_midi, velocity=64, time=3840))
+    track.append(Message('note_off', note=ableton_midi, velocity=64, time=TICKS_PER_BAR * length_bars))
     
     # Add end of track
     track.append(MetaMessage('end_of_track', time=0))
@@ -112,12 +121,13 @@ for file_number, note_info in enumerate(notes_with_midi, start=1):
     filename = f"{file_number:02d} {safe_filename}.mid"
     mid.save(filename)
     
-    print(f"✓ Created: {filename}")
+    print(f"Created: {filename}")
     print(f"  Track name in Ableton: '{track_name}'")
     print(f"  Note: {file_note}")
     print(f"  MIDI note: {ableton_midi}")
     print(f"  Plays at: {standard_name} pitch (standard notation)")
     print(f"  Frequency: {frequency:.2f} Hz")
+    print(f"  Length: {length_bars} bars")
     print()
 
 # Change back to original directory
@@ -167,15 +177,16 @@ print("2. Drag and drop MIDI files into Ableton")
 print("3. Tracks will be named with section names (e.g., 'Intro C#1')")
 print("4. Filenames match track names (with underscores instead of spaces)")
 print("5. Files are numbered 01-10 by pitch for easy organization")
+print("6. Main sections are 4 bars, fills/endings are 2 bars")
 print()
 print("SECTION ORGANIZATION:")
-print("• Intro: 01 Intro_C#1")
-print("• Fills: 02 Fill_D#1, 05 Fill_A#1")
-print("• Verses: 03 Verse_1_F#1, 04 Verse_2_G#1")
-print("• Choruses: 06 Chorus_1_C#2, 07 Chorus_2_D#2")
-print("• Break: 08 Break_F#2")
-print("• Special: 09 Special_G#2")
-print("• Ending: 10 Ending_A#2")
+print("- Intro: 01 Intro_C#1")
+print("- Fills: 02 Fill_D#1, 05 Fill_A#1")
+print("- Verses: 03 Verse_1_F#1, 04 Verse_2_G#1")
+print("- Choruses: 06 Chorus_1_C#2, 07 Chorus_2_D#2")
+print("- Break: 08 Break_F#2")
+print("- Special: 09 Special_G#2")
+print("- Ending: 10 Ending_A#2")
 print()
 print("PRODUCTION WORKFLOW:")
 print("1. Use Intro for track beginnings")

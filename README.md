@@ -51,15 +51,20 @@ Generates specific notes for beatmaking with section names:
 - C#1 (Intro), D#1 (Fill), F#1 (Verse 1), G#1 (Verse 2), A#1 (Fill)
 - C#2 (Chorus 1), D#2 (Chorus 2), F#2 (Break), G#2 (Special), A#2 (Ending)
 
-### 2. Subcraft Generator (`subcraft_notes.py`)
+### 2. Beatmaker 2 Generator (`beatmaker2_notes.py`)
+Generates Beatmaker 2 groove notes from C3 through B4:
+- Verses: C3, D3, E3, F3, G3; Intros: C#3, D#3; Fills: F#3, G#3, A#3
+- Choruses: A3, B3, C4, D4, E4; Endings: C#4, D#4; Specials: F4, G4, A4; Breakdowns: F#4, G#4, A#4; Stop: B4
+
+### 3. Subcraft Generator (`subcraft_notes.py`)
 Generates C2 through E2 with loop patterns:
 - C2 (Loop 1), C#2 (Loop 2), D2 (Loop 3), D#2 (Stop), E2 (Loop 4)
 
-### 3. USynth Generator (`usynth_notes.py`)
+### 4. USynth Generator (`usynth_notes.py`)
 Generates complete octave C1 through B1 with function names:
 - Loop patterns, mute, repeat, tempo multipliers (Time x2/x3/x4), stop
 
-### 4. V-Drummer Generator (`drummer_notes.py`)
+### 5. V-Drummer Generator (`drummer_notes.py`)
 Generates comprehensive drum patterns across multiple octaves:
 - **C3-G3**: Verse 1-5 patterns
 - **C#3, D#3**: Intro 1-2 patterns
@@ -70,26 +75,26 @@ Generates comprehensive drum patterns across multiple octaves:
 - **F#4, G#4, A#4**: Breakdown 1-3 patterns
 - **B4**: Stop pattern
 
-### 5. V-Bassist Generator (`vbassist_notes.py`)
+### 6. V-Bassist Generator (`vbassist_notes.py`)
 Generates bass patterns with phrases, styles, and transitions:
 - **C0**: Silence pattern
 - **C#0-B1**: Phrases 1-18 with Intros and Fills
 - **C2-A#2**: Styles 1-6 with Style Intros and Style Fills
 - **B2**: Stop pattern
 
-### 6. V-Pianist Generator (`pianist_notes.py`)
+### 7. V-Pianist Generator (`pianist_notes.py`)
 Generates piano phrases and chord progressions:
 - **C1-B1**: Phrases 1-7 with Fills
 - **C#1, D#1**: Low Chord and High Chord progressions
 
-### 7. V-Guitarist Generator (`vguitarist_notes.py`)
+### 8. V-Guitarist Generator (`vguitarist_notes.py`)
 Generates guitar patterns across multiple ranges:
 - **C0**: Silence pattern
 - **C#0-B1**: Phrases 1-23
 - **C2-A#2**: Styles 1-11
 - **B2**: Stop pattern
 
-### 8. Groovemate Generator (`groovemate_notes.py`)
+### 9. Groovemate Generator (`groovemate_notes.py`)
 Style pattern layout:
 - **C3 D3 E3 F3 G3** → Verses
 - **C#3 D#3** → Intros
@@ -100,7 +105,7 @@ Style pattern layout:
 - **F#4 G#4 A#4** → Breakdowns
 - **B4** → Stop
 
-### 9. SE-ORCHESTRA Generator (`se-orch_notes.py`)
+### 10. SE-ORCHESTRA Generator (`se-orch_notes.py`)
 Orchestral pattern layout:
 - **C1-A1** -> Phrases
 - **C#1, D#1, F#1, G#1** -> Additions
@@ -109,7 +114,7 @@ Orchestral pattern layout:
 - **C2-B2** -> Bass
 - **C3-B4** -> Play
 
-### 10. SE-DRUMS Generator (`se-drums_notes.py`)
+### 11. SE-DRUMS Generator (`se-drums_notes.py`)
 Drum pattern layout:
 - **C2-B2** -> Common Phrases
 - **C#2, D#2** -> Hits
@@ -282,6 +287,8 @@ UJAM generators:
 ```bash
 python3 ./generators_ujam/beatmaker3_notes.py
 python3 ./generators_ujam/beatmaker3_sequences.py
+python3 ./generators_ujam/beatmaker2_notes.py
+python3 ./generators_ujam/beatmaker2_sequences.py
 python3 ./generators_ujam/drummer_notes.py
 python3 ./generators_ujam/groovemate_notes.py
 python3 ./generators_ujam/groovemate_sequences.py
