@@ -67,7 +67,8 @@ Generates Beatmaker 2 groove notes from C3 through B4:
 **Sequence generator (`beatmaker2_sequences.py`)**
 - Creates 5 arrangement-style MIDI files in `sequences_beatmaker2`
 - Each sequence is 64 bars, built from 16 four-bar blocks
-- Each song starts with a 2-bar Intro followed by 2 bars of Verse, Chorus, or Special
+- Each song starts with a 2-bar Intro followed by 2 bars of Verse or Chorus
+- Body blocks start with Verse and Chorus material before introducing Specials in the latter half
 - Body blocks are either 4 bars of Verse, Chorus, or Special, or 3 bars plus a 1-bar Fill/Breakdown
 - Breakdown notes only appear as the fourth bar before the next Verse or Chorus block
 - Each song ends with 3 bars of Verse, Chorus, or Special plus a 1-bar Ending
