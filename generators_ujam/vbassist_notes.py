@@ -8,6 +8,10 @@ output_dir = "notes_v-bassist"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
+PPQ = 480
+TICKS_PER_BAR = PPQ * 4
+NOTE_LENGTH_BARS = 2
+
 # List of notes with their custom track names
 notes_data = [
     # C0 - Silence
@@ -61,9 +65,9 @@ print("=" * 70)
 print("V-BASSIST NOTE GENERATOR WITH TRACK-NAME FILENAMES")
 print("=" * 70)
 print(f"Generating {len(notes_data)} notes in '{output_dir}' folder")
-print("✓ Filenames match Ableton MIDI clip names")
-print("✓ Files numbered sequentially from lowest to highest note")
-print("✓ Range: C2 through E2 in Ableton notation")
+print("Filenames match Ableton MIDI clip names")
+print("Files numbered sequentially from lowest to highest note")
+print("Range: C2 through E2 in Ableton notation")
 print()
 
 # Note mapping for Ableton
@@ -121,7 +125,7 @@ for file_number, note_info in enumerate(notes_with_midi, start=1):
     frequency = 440.0 * (2.0 ** ((ableton_midi - 69) / 12.0))
     
     # Create MIDI file
-    mid = MidiFile()
+    mid = MidiFile(ticks_per_beat=PPQ)
     track = MidiTrack()
     mid.tracks.append(track)
     
@@ -136,9 +140,9 @@ for file_number, note_info in enumerate(notes_with_midi, start=1):
     track.append(MetaMessage('time_signature', numerator=4, denominator=4, 
                             clocks_per_click=24, notated_32nd_notes_per_beat=8, time=0))
     
-    # Add note (4 bars at 120 BPM = 1920 ticks)
+    # Add note using the V-Bassist groove length.
     track.append(Message('note_on', note=ableton_midi, velocity=64, time=0))
-    track.append(Message('note_off', note=ableton_midi, velocity=64, time=1920))
+    track.append(Message('note_off', note=ableton_midi, velocity=64, time=TICKS_PER_BAR * NOTE_LENGTH_BARS))
     
     # Add end of track
     track.append(MetaMessage('end_of_track', time=0))
@@ -148,12 +152,13 @@ for file_number, note_info in enumerate(notes_with_midi, start=1):
     filename = f"{file_number:02d} {safe_filename}.mid"
     mid.save(filename)
     
-    print(f"✓ Created: {filename}")
+    print(f"Created: {filename}")
     print(f"  Track name in Ableton: '{track_name}'")
     print(f"  Note: {file_note}")
     print(f"  MIDI note: {ableton_midi}")
     print(f"  Plays at: {standard_name} pitch (standard notation)")
     print(f"  Frequency: {frequency:.2f} Hz")
+    print(f"  Length: {NOTE_LENGTH_BARS} bars")
     print()
 
 # Change back to original directory
@@ -234,21 +239,21 @@ print("4. Filenames match track names (with underscores instead of spaces)")
 print("5. Files are numbered 01-36 by pitch for easy organization")
 print()
 print("NOTE RANGE DETAILS:")
-print("• Range: C0 to B2 in Ableton notation")
-print("• Corresponds to: C0 to B2 in standard notation (same)")
-print("• Frequency range: 16.35 Hz to 123.47 Hz")
-print("• Perfect range for sub-bass to bass frequency content")
+print("- Range: C0 to B2 in Ableton notation")
+print("- Corresponds to: C0 to B2 in standard notation (same)")
+print("- Frequency range: 16.35 Hz to 123.47 Hz")
+print("- Perfect range for sub-bass to bass frequency content")
 print()
 print("V-BASSIST PATTERN ORGANIZATION:")
-print("• Silence C0: Silent/rest pattern for pauses")
-print("• Phrases 1-18: Progressive bass phrase patterns across multiple octaves")
-print("• Intros 1-2: Introduction patterns for song openings")
-print("• Fills 1-3: Bass fill patterns for transitions")
-print("• Styles 1-6: Different bass playing style patterns")
-print("• Style Intros 1-2: Introduction patterns for style sections")
-print("• Style Fills 1-3: Fill patterns specific to style sections")
-print("• Stop B2: Stop/break pattern for dramatic pauses")
-print("• Organized by pitch progression across 3 octaves")
+print("- Silence C0: Silent/rest pattern for pauses")
+print("- Phrases 1-18: Progressive bass phrase patterns across multiple octaves")
+print("- Intros 1-2: Introduction patterns for song openings")
+print("- Fills 1-3: Bass fill patterns for transitions")
+print("- Styles 1-6: Different bass playing style patterns")
+print("- Style Intros 1-2: Introduction patterns for style sections")
+print("- Style Fills 1-3: Fill patterns specific to style sections")
+print("- Stop B2: Stop/break pattern for dramatic pauses")
+print("- Organized by pitch progression across 3 octaves")
 print()
 print("WORKFLOW SUGGESTIONS:")
 print("1. Start with Silence or Intro patterns for clean beginnings")
@@ -261,11 +266,11 @@ print("7. End with Stop pattern for dramatic conclusions")
 print("8. Combine patterns across octaves for dynamic bass arrangements")
 print()
 print("PRODUCTION TIPS:")
-print("• Phrases 1-11 (C#0-B0): Use for deep sub-bass foundations")
-print("• Phrases 12-18 (C1-B1): Use for standard basslines")
-print("• Intros: Perfect for song openings and section beginnings")
-print("• Fills: Ideal for transitions and adding rhythmic interest")
-print("• Styles: Switch between different bass playing techniques")
-print("• Silence: Use for dramatic pauses and rhythmic spacing")
-print("• Stop: Create hard breaks and dramatic pauses")
-print("• Combine patterns across octaves for full bass frequency coverage")
+print("- Phrases 1-11 (C#0-B0): Use for deep sub-bass foundations")
+print("- Phrases 12-18 (C1-B1): Use for standard basslines")
+print("- Intros: Perfect for song openings and section beginnings")
+print("- Fills: Ideal for transitions and adding rhythmic interest")
+print("- Styles: Switch between different bass playing techniques")
+print("- Silence: Use for dramatic pauses and rhythmic spacing")
+print("- Stop: Create hard breaks and dramatic pauses")
+print("- Combine patterns across octaves for full bass frequency coverage")
