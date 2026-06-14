@@ -51,10 +51,25 @@ Generates specific notes for beatmaking with section names:
 - C#1 (Intro), D#1 (Fill), F#1 (Verse 1), G#1 (Verse 2), A#1 (Fill)
 - C#2 (Chorus 1), D#2 (Chorus 2), F#2 (Break), G#2 (Special), A#2 (Ending)
 
+**Sequence generator (`beatmaker3_sequences.py`)**
+- Creates 5 arrangement-style MIDI files in `sequences_beatmaker3`
+- Each sequence is 64 bars, built from 16 four-bar sections
+- Main sections are sustained 4-bar notes
+- Repeated Verse sections become 2 bars Verse + 2 bars Fill
+- Repeated Chorus sections become 2 bars Chorus + 2 bars Ending
+
 ### 2. Beatmaker 2 Generator (`beatmaker2_notes.py`)
 Generates Beatmaker 2 groove notes from C3 through B4:
 - Verses: C3, D3, E3, F3, G3; Intros: C#3, D#3; Fills: F#3, G#3, A#3
 - Choruses: A3, B3, C4, D4, E4; Endings: C#4, D#4; Specials: F4, G4, A4; Breakdowns: F#4, G#4, A#4; Stop: B4
+
+**Sequence generator (`beatmaker2_sequences.py`)**
+- Creates 5 arrangement-style MIDI files in `sequences_beatmaker2`
+- Each sequence is 64 bars, built from 16 four-bar sections
+- Main sections are sustained 4-bar notes
+- Repeated Verse sections become 2 bars Verse + 2 bars Fill
+- Repeated Chorus sections become 2 bars Chorus + 2 bars Ending
+- Final Ending sections resolve with Stop on the last bar
 
 ### 3. Subcraft Generator (`subcraft_notes.py`)
 Generates C2 through E2 with loop patterns:
@@ -104,6 +119,13 @@ Style pattern layout:
 - **F4 G4 A4** → Specials
 - **F#4 G#4 A#4** → Breakdowns
 - **B4** → Stop
+
+**Sequence generator (`groovemate_sequences.py`)**
+- Creates 5 arrangement-style MIDI files in `sequences_groovemate`
+- Each sequence is 64 bars, built from 16 four-bar sections
+- Intro sections use 1 bar Intro + 1 bar Fill
+- Other sections use 3 bars of the selected section + 1 bar Fill
+- Arrangements rotate through intro, verse, chorus, special, breakdown, and ending sections
 
 ### 10. SE-ORCHESTRA Generator (`se-orch_notes.py`)
 Orchestral pattern layout:
