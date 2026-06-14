@@ -4,7 +4,7 @@ import os
 import re
 
 # Create output directory
-output_dir = "notes_beatmaker"
+output_dir = "notes_beatmaker3"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
@@ -162,7 +162,7 @@ print("9. Special G#2 - Special/unique section")
 print("10. Ending A#2 - Final section (highest pitch)")
 print()
 print("IMPORT INTO ABLETON:")
-print("1. Go to the 'notes_beatmaker' folder")
+print("1. Go to the 'notes_beatmaker3' folder")
 print("2. Drag and drop MIDI files into Ableton")
 print("3. Tracks will be named with section names (e.g., 'Intro C#1')")
 print("4. Filenames match track names (with underscores instead of spaces)")

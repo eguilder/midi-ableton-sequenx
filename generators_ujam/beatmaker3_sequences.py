@@ -8,7 +8,7 @@ import itertools
 # CONFIG
 # =========================================
 
-OUTPUT_DIR = "sequences_beatmaker"
+OUTPUT_DIR = "sequences_beatmaker3"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 PPQ = 480

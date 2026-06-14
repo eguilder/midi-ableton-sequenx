@@ -46,7 +46,7 @@ Generates chord triads and progressions for use with Ableton clips and sequencer
 
 ## UJAM Generators
 
-### 1. Beatmaker Generator (`beatmaker_notes.py`)
+### 1. Beatmaker 3 Generator (`beatmaker3_notes.py`)
 Generates specific notes for beatmaking with section names:
 - C#1 (Intro), D#1 (Fill), F#1 (Verse 1), G#1 (Verse 2), A#1 (Fill)
 - C#2 (Chorus 1), D#2 (Chorus 2), F#2 (Break), G#2 (Special), A#2 (Ending)
@@ -280,8 +280,8 @@ python3 ./generators_ableton/create_chords.py
 UJAM generators:
 
 ```bash
-python3 ./generators_ujam/beatmaker_notes.py
-python3 ./generators_ujam/beatmaker_sequences.py
+python3 ./generators_ujam/beatmaker3_notes.py
+python3 ./generators_ujam/beatmaker3_sequences.py
 python3 ./generators_ujam/drummer_notes.py
 python3 ./generators_ujam/groovemate_notes.py
 python3 ./generators_ujam/groovemate_sequences.py
