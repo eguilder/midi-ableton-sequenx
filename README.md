@@ -1,6 +1,6 @@
 # MIDI Generators for Ableton Live
 
-A collection of Python scripts for generating MIDI files designed to control sequencer- and phrase-based instruments for usage with **Ableton Live**, **UJAM**, **Native Instruments**, **Spectrasonics**, **WA Production** and **Audiomodern** products. All generators create Ableton-ready MIDI clips with correct octave handling, embedded track names, and predictable note layouts. Other DAWs can use these sequencer notes as well.
+A collection of Python scripts for generating MIDI files and chordset data designed to control sequencer- and phrase-based instruments for usage with **Ableton Live**, **Maschine**, **UJAM**, **Native Instruments**, **Spectrasonics**, **WA Production** and **Audiomodern** products. MIDI generators create Ableton-ready clips with correct octave handling, embedded track names, and predictable note layouts. Other DAWs can use these sequencer notes as well.
 
 The MIDI clips in this repo can either be generated via scripts or used directly inside Ableton Live.
 
@@ -13,6 +13,27 @@ The MIDI clips in this repo can either be generated via scripts or used directly
 - **Multiple generator layouts** for different instrument ecosystems
 - **Sequentially numbered filenames** (sorted by pitch)
 - **Clip names that match filenames** for easy browsing
+- **Maschine user chordset JSON generation** from MIDI chord sequences
+
+---
+
+## Maschine Chordsets
+
+Use `generators_maschine/maschine_user_chordsets.py` to convert a MIDI file containing a chord sequence into Maschine user chordset JSON files:
+
+```bash
+python generators_maschine/maschine_user_chordsets.py "All Borrowed & Modal Chords (F Minor).mid"
+```
+
+Useful options:
+
+```bash
+python generators_maschine/maschine_user_chordsets.py "path/to/chord_sequence.mid" --output-dir "C:/Users/you/AppData/Local/Native Instruments/Shared/User Chords"
+python generators_maschine/maschine_user_chordsets.py "path/to/chord_sequence.mid" --show-notes
+python generators_maschine/maschine_user_chordsets.py "path/to/chord_sequence.mid" --show-timing
+```
+
+The generator detects the root key from the input filename, such as `(F Minor)`, and names output sets like `Fmin.01.json` and `Fmin.02.json`. Each JSON file contains up to 12 chord slots, so a 24-chord MIDI file creates two user chordset files. Chord notes are stored as compact root-relative note numbers for Maschine, with the first note folded into the first octave range.
 
 ---
 
@@ -21,12 +42,13 @@ The MIDI clips in this repo can either be generated via scripts or used directly
 Generators are organized by target ecosystem and workflow:
 
 1. **Ableton-native generators**: General-purpose note, instrument-note, and chord/progression MIDI clips.
-2. **UJAM generators**: Beatmaker, drummer, bassist, guitarist, pianist, synth, Groovemate, SE-DRUMS, and SE-ORCHESTRA trigger-note layouts.
-3. **Native Instruments generators**: Kontakt and NI-style phrase, chord, groove, and sound/pattern trigger layouts.
-4. **Spectrasonics generators**: Stylus groove trigger clips across extended and normal ranges.
-5. **WA Production generators**: Instachord MIDI trigger grids and Instacomposer 3 preset assembly from exported section files.
-6. **Audiomodern generators**: Playbeat remix groove trigger clips.
-7. **reMIDI generators**: Structured drum, bass, and pad sequence generators for arrangement-style MIDI output.
+2. **Maschine generators**: User chordset JSON generation from MIDI chord sequences.
+3. **UJAM generators**: Beatmaker, drummer, bassist, guitarist, pianist, synth, Groovemate, SE-DRUMS, and SE-ORCHESTRA trigger-note layouts.
+4. **Native Instruments generators**: Kontakt and NI-style phrase, chord, groove, and sound/pattern trigger layouts.
+5. **Spectrasonics generators**: Stylus groove trigger clips across extended and normal ranges.
+6. **WA Production generators**: Instachord MIDI trigger grids and Instacomposer 3 preset assembly from exported section files.
+7. **Audiomodern generators**: Playbeat remix groove trigger clips.
+8. **reMIDI generators**: Structured drum, bass, and pad sequence generators for arrangement-style MIDI output.
 
 ---
 
@@ -41,6 +63,19 @@ Generates chord triads and progressions for use with Ableton clips and sequencer
 - Common progressions (I–IV–V, ii–V–I, etc.)
 - Multiple voicings (root, 1st inversion, 2nd inversion)
 - Roman numeral labeling
+
+---
+
+## Maschine Generators
+
+### 1. User Chordsets (`maschine_user_chordsets.py`)
+Builds Maschine user chordset JSON files from MIDI chord sequences:
+- Detects chord names from simultaneous MIDI notes
+- Detects the root key from the input filename, for example `(F Minor)` -> `Fmin`
+- Converts chord notes to compact note numbers relative to the file root key
+- Splits 24-chord MIDI files into two 12-slot JSON files
+- Generates unique UUID values for each chordset
+- Default output folder: `maschine_user_chordsets`
 
 ---
 
@@ -337,6 +372,13 @@ python3 ./generators_native/s-percussionist_notes.py
 python3 ./generators_native/session_notes.py
 python3 ./generators_native/spotlight_notes.py
 python3 ./generators_native/trk-01_notes.py
+```
+
+Maschine generators:
+
+```bash
+python3 ./generators_maschine/maschine_user_chordsets.py "All Borrowed & Modal Chords (F Minor).mid"
+python3 ./generators_maschine/maschine_user_chordsets.py "All Borrowed & Modal Chords (F Minor).mid" --output-dir "C:/Users/you/AppData/Local/Native Instruments/Shared/User Chords"
 ```
 
 Spectrasonics generators:
