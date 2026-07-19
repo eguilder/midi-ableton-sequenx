@@ -49,9 +49,12 @@ Generates chord triads and progressions for use with Ableton clips and sequencer
 ### 1. User Chordsets (`maschine_user_chordsets.py`)
 Builds Maschine user chordset JSON files from MIDI chord sequences:
 - Detects chord names from simultaneous MIDI notes
+- Uses Maschine-style chord names such as `FMaj`, `GMin7`, `C9(#11)`, and `BMin7(b5)`
 - Detects the root key from the input filename, for example `(F Minor)` -> `Fmin`
+- Supports manually overriding the root key with `--key`
 - Converts chord notes to compact note numbers relative to the file root key
 - Splits 24-chord MIDI files into two 12-slot JSON files
+- Supports custom output sequence numbering with `--seq`
 - Generates unique UUID values for each chordset
 - Default output folder: `maschine_user_chordsets`
 
@@ -65,11 +68,13 @@ Useful options:
 
 ```bash
 python generators_maschine/maschine_user_chordsets.py "path/to/chord_sequence.mid" --output-dir "C:/Users/you/AppData/Local/Native Instruments/Shared/User Chords"
+python generators_maschine/maschine_user_chordsets.py "path/to/chord_sequence.mid" --key "F Minor"
+python generators_maschine/maschine_user_chordsets.py "path/to/chord_sequence.mid" --key Fmin --seq 3
 python generators_maschine/maschine_user_chordsets.py "path/to/chord_sequence.mid" --show-notes
 python generators_maschine/maschine_user_chordsets.py "path/to/chord_sequence.mid" --show-timing
 ```
 
-The generator detects the root key from the input filename, such as `(F Minor)`, and names output sets like `Fmin.01.json` and `Fmin.02.json`. Each JSON file contains up to 12 chord slots, so a 24-chord MIDI file creates two user chordset files. Chord notes are stored as compact root-relative note numbers for Maschine, with the first note folded into the first octave range.
+The generator detects the root key from the input filename, such as `(F Minor)`, unless `--key` is provided. Output sets are named like `Fmin.01.json` and `Fmin.02.json`; using `--seq 3` starts at `Fmin.03.json`. Each JSON file contains up to 12 chord slots, so a 24-chord MIDI file creates two user chordset files. Chord notes are stored as compact root-relative note numbers for Maschine, with the first note folded into the first octave range.
 
 ---
 

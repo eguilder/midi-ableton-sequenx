@@ -37,45 +37,51 @@ NOTE_NAME_TO_PITCH_CLASS = {
 }
 
 CHORD_TEMPLATES = {
-    (0, 4, 7): "maj",
-    (0, 3, 7): "m",
-    (0, 3, 6): "dim",
-    (0, 4, 8): "aug",
-    (0, 5, 7): "sus4",
-    (0, 2, 7): "sus2",
-    (0, 7): "5",
+    (0, 4, 7): "Maj",
+    (0, 4, 7, 9): "Maj6",
+    (0, 4, 7, 11): "Maj7",
+    (0, 2, 4, 7): "MajAdd9",
+    (0, 2, 4, 7, 9): "Maj6/9",
+    (0, 2, 4, 7, 11): "Maj9",
+    (0, 2, 4, 6, 7, 11): "Maj9(#11)",
+    (0, 2, 4, 7, 9, 11): "Maj13",
+    (0, 3, 7): "Min",
+    (0, 3, 7, 9): "Min6",
+    (0, 3, 7, 10): "Min7",
+    (0, 2, 3, 7): "MinAdd9",
+    (0, 2, 3, 7, 9): "Min6/9",
+    (0, 2, 3, 7, 10): "Min9",
+    (0, 2, 3, 5, 7, 10): "Min11",
+    (0, 2, 3, 7, 9, 10): "Min13",
     (0, 4, 7, 10): "7",
-    (0, 4, 7, 11): "maj7",
-    (0, 3, 7, 10): "m7",
-    (0, 3, 7, 11): "m(maj7)",
-    (0, 3, 6, 9): "dim7",
-    (0, 3, 6, 10): "m7b5",
-    (0, 4, 8, 10): "aug7",
-    (0, 4, 8, 11): "augmaj7",
     (0, 5, 7, 10): "7sus4",
-    (0, 2, 7, 10): "7sus2",
-    (0, 4, 7, 9): "6",
-    (0, 3, 7, 9): "m6",
-    (0, 2, 4, 7): "add9",
-    (0, 2, 3, 7): "madd9",
     (0, 2, 4, 7, 10): "9",
-    (0, 2, 4, 7, 11): "maj9",
-    (0, 2, 3, 7, 10): "m9",
-    (0, 2, 3, 7, 11): "m(maj9)",
-    (0, 2, 4, 7, 9): "6/9",
-    (0, 2, 3, 7, 9): "m6/9",
+    (0, 2, 5, 7, 10): "9sus4",
+    (0, 2, 4, 7, 9, 10): "13",
+    (0, 4, 8, 10): "7(#5)",
+    (0, 3, 4, 7, 10): "7(#9)",
+    (0, 2, 4, 6, 7, 10): "9(#11)",
+    (0, 2, 7): "Sus2",
+    (0, 5, 7): "Sus4",
+    (0, 4, 6, 7): "Maj(#4)",
+    (0, 4, 8): "Aug",
+    (0, 3, 6): "Dim",
+    (0, 3, 6, 9): "Dim7",
+    (0, 3, 6, 10): "Min7(b5)",
+    (0, 3, 7, 11): "MinMaj7",
+    (0, 7): "5",
 }
 
 EXTENSION_NAMES = {
-    1: "b9",
-    2: "9",
+    1: "(b9)",
+    2: "Add9",
     3: "#9",
-    5: "11",
-    6: "#11",
-    8: "b13",
+    5: "Add11",
+    6: "(#11)",
+    8: "(b13)",
     9: "13",
     10: "7",
-    11: "maj7",
+    11: "Maj7",
 }
 
 
@@ -235,13 +241,22 @@ def parse_key_from_filename(midi_path: str) -> KeyInfo:
         )
 
     key_text = parenthetical_matches[-1].strip()
-    match = re.match(r"^([A-Ga-g](?:#|b)?)(?:\s+|-)?(major|minor|maj|min)?$", key_text, re.IGNORECASE)
+    try:
+        return parse_key_text(key_text)
+    except ValueError as error:
+        raise ValueError(f"Could not parse key from filename text: ({key_text})") from error
+
+
+def parse_key_text(key_text: str) -> KeyInfo:
+    normalized_key_text = key_text.strip()
+    match = re.match(r"^([A-Ga-g](?:#|b)?)(?:\s+|-)?(major|minor|maj|min|m)?$", normalized_key_text, re.IGNORECASE)
     if not match:
-        raise ValueError(f"Could not parse key from filename text: ({key_text})")
+        raise ValueError(f"Could not parse key: {key_text}")
 
     root_name = format_root_name(match.group(1))
-    mode_text = (match.group(2) or "major").lower()
-    mode_suffix = "min" if mode_text in {"minor", "min"} else "maj"
+    mode_token = match.group(2)
+    mode_text = (mode_token or "major").lower()
+    mode_suffix = "min" if mode_text in {"minor", "min", "m"} else "maj"
     root_pitch_class = NOTE_NAME_TO_PITCH_CLASS[root_name.upper()]
 
     return KeyInfo(root_name=root_name, root_pitch_class=root_pitch_class, mode_suffix=mode_suffix)
@@ -310,11 +325,12 @@ def write_chordset_json_files(
     root_midi: int,
     output_dir: str,
     chords_per_set: int = 12,
+    sequence_start: int = 1,
 ) -> List[str]:
     os.makedirs(output_dir, exist_ok=True)
     output_paths = []
 
-    for chunk_index, start_index in enumerate(range(0, len(chord_events), chords_per_set), 1):
+    for chunk_index, start_index in enumerate(range(0, len(chord_events), chords_per_set), sequence_start):
         chunk = chord_events[start_index : start_index + chords_per_set]
         set_name = f"{key_info.set_name_prefix}.{chunk_index:02d}"
         payload = build_chordset_payload(set_name, chunk, root_midi, slot_count=chords_per_set)
@@ -427,6 +443,16 @@ def parse_args() -> argparse.Namespace:
         default="maschine_user_chordsets",
         help="Directory to write generated Maschine user chordset JSON files. Default: maschine_user_chordsets.",
     )
+    parser.add_argument(
+        "--key",
+        help="Manually set the root key, overriding filename detection. Examples: 'F Minor', Fmin, Bb Major.",
+    )
+    parser.add_argument(
+        "--seq",
+        type=int,
+        default=1,
+        help="Starting sequence number for generated chordset filenames. Example: --seq 3 writes Fmin.03.json.",
+    )
     return parser.parse_args()
 
 
@@ -442,7 +468,7 @@ def main() -> int:
             note_names=note_names,
             minimum_notes=args.minimum_notes,
         )
-        key_info = parse_key_from_filename(args.midi_file)
+        key_info = parse_key_text(args.key) if args.key else parse_key_from_filename(args.midi_file)
     except OSError as error:
         print(f"Could not read MIDI file: {error}", file=sys.stderr)
         return 1
@@ -450,12 +476,16 @@ def main() -> int:
         print(f"Could not generate chordsets: {error}", file=sys.stderr)
         return 1
 
+    if args.seq < 1:
+        print("Could not generate chordsets: --seq must be 1 or greater.", file=sys.stderr)
+        return 1
+
     print_detected_sequence(args.midi_file, midi_file, chord_events, note_names, args.show_notes, args.show_timing)
     if not chord_events:
         return 1
 
     root_midi = root_reference_midi(chord_events, key_info.root_pitch_class)
-    output_paths = write_chordset_json_files(chord_events, key_info, root_midi, args.output_dir)
+    output_paths = write_chordset_json_files(chord_events, key_info, root_midi, args.output_dir, sequence_start=args.seq)
 
     print()
     print("Generated JSON chordsets:")
