@@ -1,6 +1,6 @@
 # MIDI Generators for Ableton Live
 
-A collection of Python scripts for generating MIDI files and chordset data designed to control sequencer- and phrase-based instruments for usage with **Ableton Live**, **Maschine**, **UJAM**, **Native Instruments**, **Spectrasonics**, **WA Production** and **Audiomodern** products. MIDI generators create Ableton-ready clips with correct octave handling, embedded track names, and predictable note layouts. Other DAWs can use these sequencer notes as well.
+A collection of Python scripts for generating MIDI files and chordset data designed to control sequencer- and phrase-based instruments for usage with **Ableton Live**, **Maschine**, **Scaler**, **UJAM**, **Native Instruments**, **Spectrasonics**, **WA Production** and **Audiomodern** products. MIDI generators create Ableton-ready clips with correct octave handling, embedded track names, and predictable note layouts. Other DAWs can use these sequencer notes as well.
 
 The MIDI clips in this repo can either be generated via scripts or used directly inside Ableton Live.
 
@@ -14,6 +14,7 @@ The MIDI clips in this repo can either be generated via scripts or used directly
 - **Sequentially numbered filenames** (sorted by pitch)
 - **Clip names that match filenames** for easy browsing
 - **Maschine user chordset JSON generation** from MIDI chord sequences
+- **Scaler chordset XML generation** from MIDI chord sequences
 
 ## Generator Categories
 
@@ -21,12 +22,13 @@ Generators are organized by target ecosystem and workflow:
 
 1. **Ableton-native generators**: General-purpose note, instrument-note, and chord/progression MIDI clips.
 2. **Maschine generators**: User chordset JSON generation from MIDI chord sequences.
-3. **UJAM generators**: Beatmaker, drummer, bassist, guitarist, pianist, synth, Groovemate, SE-DRUMS, and SE-ORCHESTRA trigger-note layouts.
-4. **Native Instruments generators**: Kontakt and NI-style phrase, chord, groove, and sound/pattern trigger layouts.
-5. **Spectrasonics generators**: Stylus groove trigger clips across extended and normal ranges.
-6. **WA Production generators**: Instachord MIDI trigger grids and Instacomposer 3 preset assembly from exported section files.
-7. **Audiomodern generators**: Playbeat remix groove trigger clips.
-8. **reMIDI generators**: Structured drum, bass, and pad sequence generators for arrangement-style MIDI output.
+3. **Scaler generators**: Chordset XML generation from MIDI chord sequences.
+4. **UJAM generators**: Beatmaker, drummer, bassist, guitarist, pianist, synth, Groovemate, SE-DRUMS, and SE-ORCHESTRA trigger-note layouts.
+5. **Native Instruments generators**: Kontakt and NI-style phrase, chord, groove, and sound/pattern trigger layouts.
+6. **Spectrasonics generators**: Stylus groove trigger clips across extended and normal ranges.
+7. **WA Production generators**: Instachord MIDI trigger grids and Instacomposer 3 preset assembly from exported section files.
+8. **Audiomodern generators**: Playbeat remix groove trigger clips.
+9. **reMIDI generators**: Structured drum, bass, and pad sequence generators for arrangement-style MIDI output.
 
 ---
 
@@ -75,6 +77,34 @@ python generators_maschine/maschine_user_chordsets.py "path/to/chord_sequence.mi
 ```
 
 The generator detects the root key from the input filename, such as `(F Minor)`, unless `--key` is provided. Output sets are named like `Fmin.01.json` and `Fmin.02.json`; using `--seq 3` starts at `Fmin.03.json`. Each JSON file contains up to 12 chord slots, so a 24-chord MIDI file creates two user chordset files. Chord notes are stored as compact root-relative note numbers for Maschine, with the first note folded into the first octave range.
+
+---
+
+## Scaler Generators
+
+### 1. Chordset XML (`scaler_chordset.py`)
+Builds Scaler chordset XML files from MIDI chord sequences:
+- Uses required `--input-file` and `--output-file` arguments
+- Writes one XML `CHORD` element for every detected MIDI chord
+- Preserves the original MIDI note numbers with no pitch or octave conversion
+- Generates a unique UUID value for each Scaler `CHORDSET`
+- Supports any number of input chords
+- Default output folder: `scaler_user_chordsets`
+
+Use `generators_scaler/scaler_chordset.py` to convert a MIDI chord sequence into a Scaler XML chordset:
+
+```bash
+python generators_scaler/scaler_chordset.py --input-file "path/to/chord_sequence.mid" --output-file "my_chords.xml"
+```
+
+Useful options:
+
+```bash
+python generators_scaler/scaler_chordset.py --input-file "path/to/chord_sequence.mid" --output-file "my_chords"
+python generators_scaler/scaler_chordset.py --input-file "path/to/chord_sequence.mid" --output-file "my_chords.xml" --output-dir "C:/ProgramData/Scaler Music/Scaler 3/ChordSets/My Set"
+```
+
+If `--output-dir` is omitted, the XML is written to `scaler_user_chordsets`. The `.xml` extension is added automatically when omitted from `--output-file`.
 
 ---
 
@@ -378,6 +408,13 @@ Maschine generators:
 ```bash
 python3 ./generators_maschine/maschine_user_chordsets.py "All Borrowed & Modal Chords (F Minor).mid"
 python3 ./generators_maschine/maschine_user_chordsets.py "All Borrowed & Modal Chords (F Minor).mid" --output-dir "C:/Users/you/AppData/Local/Native Instruments/Shared/User Chords"
+```
+
+Scaler generators:
+
+```bash
+python3 ./generators_scaler/scaler_chordset.py --input-file "path/to/chord_sequence.mid" --output-file "my_chords.xml"
+python3 ./generators_scaler/scaler_chordset.py --input-file "path/to/chord_sequence.mid" --output-file "my_chords.xml" --output-dir "C:/ProgramData/Scaler Music/Scaler 3/ChordSets/My Set"
 ```
 
 Spectrasonics generators:
